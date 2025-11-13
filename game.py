@@ -165,6 +165,8 @@ while not difficulty in ("0", "1", "2"):
     difficulty = input(transcriber.get_index(15))
 Game.difficulty = int(difficulty)
 
+draw_main_title()
+
 print("\n" + transcriber.get_index(4))
 for i in range(10): # We'll make a small loading scene
     print(f"\r[{Fore.GREEN + Style.BRIGHT}{"-"*i}{Style.RESET_ALL + Fore.YELLOW}{"-"*(10-i)}{Style.RESET_ALL}]", end="")
