@@ -1,4 +1,4 @@
-from typing import List, Dict, TypeVar, Generic, ValuesView, Any
+from typing import List, Dict, TypeVar, Callable, Generic, ValuesView, Any
 from colorama import init as colorama_init, Fore, Back, Style
 from dataclasses import dataclass, field
 from translator import Transcriber, Language
@@ -37,7 +37,7 @@ def menu(title: str, prompt: str, options: Dict[str, str]):
     return input(prompt)
 
 # We'll create a method to run a new background sound
-def background_sound() -> Sound:
+def create_background_music() -> Sound:
     return playsound("./sounds/background.mp3", False)
 
 rng = random.Random(constants.RANDOM_SEED) # We literally use this everywhere, and it is a constant.
@@ -51,11 +51,14 @@ SettingType = TypeVar("SettingType", bound=Any)
 @dataclass
 class Setting(Generic[SettingType]):
     value: SettingType
+    toggle: bool = field(default=False)
+    custom_logic: Callable[(...), Any] = field(default=lambda: None)
     enum: "Settings" = field(init=False)
 
 # We'll create a enum for different settings
 class Settings(Enum):
     GORE: Setting[bool] = Setting(False) # Wheter we express bloddy and visious imaginary text
+    MUSIC: Setting[bool] = Setting(True, toggle=True, custom_logic=lambda: Game.toggle_music())
 
     @classmethod
     def load(cls) -> None: # Load all settings so they appeal to their real object
@@ -80,12 +83,20 @@ class Settings(Enum):
         return self.setting.value
     
     @property
+    def toggle(self) -> bool:
+        return self.setting.toggle
+    
+    @property
     def text_value(self) -> str: # Get the text correspondance of the value
         if isinstance(self.value, bool):
             return transcriber.get_index(13) if self.value else transcriber.get_index(14)
 
     def handle_input(self, text: str) -> None: # Handle text input.
         if isinstance(self.value, bool):
+            if self.toggle:
+                self.setting.value = not self.value
+                self.setting.custom_logic()
+                return
             on_text, off_text = transcriber.get_index(13).lower().strip(), transcriber.get_index(14).lower().strip()
             self.setting.value = text.lower().strip() in (on_text[0], on_text) and not text in (off_text[0], off_text)
 
@@ -103,6 +114,13 @@ class Game: # Create a namespace for our game
 
     background_music: Sound
     enemy: Enemy
+
+    def toggle_music() -> None:
+        if Game.background_music:
+            Game.background_music.stop()
+            Game.background_music = None
+        else: 
+            Game.background_music = create_background_music()
 
     def menu() -> None: # Start rendering the menu
         draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
@@ -145,7 +163,9 @@ class Game: # Create a namespace for our game
         )
         if not setting: # We'll exit the settings if the setting was incorrect
             return
-        setting.handle_input(input(transcriber.get_index(12)))
+        if not setting.toggle:
+            setting.handle_input(input(transcriber.get_index(12)))
+        else: setting.handle_input("")
         Game.options()
     
     def game() -> None: # We'll handle the actual game logic here
@@ -173,21 +193,7 @@ for obj in Game.__dict__.values(): # Load the namespace to be according to progr
     if callable(obj): obj = staticmethod(obj)
 Settings.load()
 
-# ---- meta options ----
-
-# We have these options because of how our settings menu is made. 
-# It is not togglable, but anything that requires a setting will still be set there.
-draw_title(Fore.CYAN + Style.BRIGHT + "GLADIATORS" + Style.RESET_ALL)
-print(Style.DIM + "Read the documentation for a full comprehensive list of meta-options\nLeave this field empty if you want the casual experience\n" + Style.RESET_ALL)
-game_options_input = input("Select game options (f.e 'no music, no name, ...') ").lower().split(",")
-game_options = []
-for option in game_options_input:
-    game_options.append(option.strip())
-
-Game.background_music = background_sound()
-
-if "no music" in game_options:
-    Game.background_music.stop()
+Game.background_music = create_background_music()
 
 # ---- Language ----
 
@@ -204,12 +210,9 @@ draw_main_title = lambda: draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_
 
 # ---- Introduction ----
 
-if "no name" in game_options:
-    Game.player_name = "Unknown"
-else:
-    while not Game.player_name:
-        draw_main_title()
-        Game.player_name = input(transcriber.get_index(3)) # Select a name
+while not Game.player_name:
+    draw_main_title()
+    Game.player_name = input(transcriber.get_index(3)) # Select a name
 
 difficulty = ""
 while not difficulty in ("0", "1", "2"):
