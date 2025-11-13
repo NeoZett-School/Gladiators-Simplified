@@ -2,6 +2,8 @@ from typing import Dict, TypeVar, Generic, ValuesView, Any
 from colorama import init as colorama_init, Fore, Back, Style
 from dataclasses import dataclass, field
 from translator import Transcriber, Language
+from playsound3.playsound3 import Sound
+from playsound3 import playsound
 from enum import Enum
 import time
 import sys
@@ -29,6 +31,10 @@ def menu(title: str, prompt: str, options: Dict[str, str]):
     for k, v in options.items():
         print(Fore.BLUE + k + ": " + Fore.RESET + v)
     return input(prompt)
+
+# We'll create a method to run a new background sound
+def background_sound() -> Sound:
+    return playsound("./sounds/background.mp3", False)
 
 # ---- Settings ----
 
@@ -84,6 +90,8 @@ class Game: # Create a namespace for our game
     difficulty: int = 1
     active: bool = False # Wheter the game is actively running or not
 
+    background_music: Sound
+
     def menu() -> None: # Start rendering the menu
         draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
         directory = menu(
@@ -137,9 +145,12 @@ class Game: # Create a namespace for our game
 
 # ---- Settings ----
 
+# Loadin
 for obj in Game.__dict__.values(): # Load the namespace to be according to programming standards
     if callable(obj): obj = staticmethod(obj)
 Settings.load()
+
+Game.background_music = background_sound()
 
 # ---- Language ----
 
