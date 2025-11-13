@@ -2,7 +2,7 @@ from typing import Iterable, Optional, Generator, Any
 from enum import Enum
 import Transcriber as _Transcriber
 
-class LanguageEnumMeta(type(Enum)):
+class LanguageEnumMeta(type(Enum)): # So we create a metaclass for the language enum.
     def __contains__(cls, item: str) -> bool:
         item = str(item).lower().strip()
         return any(
@@ -13,12 +13,12 @@ class LanguageEnumMeta(type(Enum)):
     def __iter__(cls) -> Iterable:
         return iter(cls.__members__.values())
 
-class Language(Enum, metaclass=LanguageEnumMeta):
+class Language(Enum, metaclass=LanguageEnumMeta): # We define languages
     SV = _Transcriber.Language("sv", "Swedish", "sv")
     EN = _Transcriber.Language("en", "English", "en")
 
     @property
-    def value(self) -> _Transcriber.Language:
+    def value(self) -> _Transcriber.Language: # Redefine the value as an language
         return super().value
 
     @classmethod
@@ -30,7 +30,7 @@ class Language(Enum, metaclass=LanguageEnumMeta):
                 return member
     
     @classmethod
-    def iterate(cls) -> Generator["Language", Any, None]:
+    def iterate(cls) -> Generator["Language", Any, None]: # When we iterate over the members, we want to yield directly from the members for performance.
         yield from cls.__members__.values()
 
 class Transcriber(_Transcriber.Transcriber):
