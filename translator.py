@@ -2,6 +2,8 @@ from typing import Iterable, Optional, Generator, Any
 from enum import Enum
 import Transcriber as _Transcriber
 
+from constants import LANGUAGE
+
 class LanguageEnumMeta(type(Enum)): # So we create a metaclass for the language enum.
     def __contains__(cls, item: str) -> bool:
         item = str(item).lower().strip()
@@ -34,5 +36,5 @@ class Language(Enum, metaclass=LanguageEnumMeta): # We define languages
         yield from cls.__members__.values()
 
 class Transcriber(_Transcriber.Transcriber):
-    def __init__(self, lang: Language) -> None:
-        super().__init__("./languages", ".lng", lang.value)
+    def __init__(self, lang: Language) -> None: # We'll only change the initialization behaviour.
+        super().__init__(LANGUAGE.BASE_PATH, LANGUAGE.EXTENTION, lang.value) # We only take one language that we apply with constants.

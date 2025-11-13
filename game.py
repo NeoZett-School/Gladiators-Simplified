@@ -1,10 +1,14 @@
-from typing import Dict, TypeVar, Generic, ValuesView, Any
+from typing import List, Dict, TypeVar, Generic, ValuesView, Any
 from colorama import init as colorama_init, Fore, Back, Style
 from dataclasses import dataclass, field
 from translator import Transcriber, Language
 from playsound3.playsound3 import Sound
 from playsound3 import playsound
 from enum import Enum
+from items import Item, WEAPONS
+from enemies import Enemy
+import constants
+import random
 import time
 import sys
 import os
@@ -35,6 +39,8 @@ def menu(title: str, prompt: str, options: Dict[str, str]):
 # We'll create a method to run a new background sound
 def background_sound() -> Sound:
     return playsound("./sounds/background.mp3", False)
+
+rng = random.Random(constants.RANDOM_SEED) # We literally use this everywhere, and it is a constant.
 
 # ---- Settings ----
 
@@ -86,11 +92,17 @@ class Settings(Enum):
 # ---- Game ----
 
 class Game: # Create a namespace for our game
-    player_name: str # The player name
+    player_name: str = "" # The player name
     difficulty: int = 1
     active: bool = False # Wheter the game is actively running or not
 
+    health: int = 100
+    weapons: List[Item] = [
+        rng.choice(WEAPONS)
+    ]
+
     background_music: Sound
+    enemy: Enemy
 
     def menu() -> None: # Start rendering the menu
         draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
@@ -140,8 +152,19 @@ class Game: # Create a namespace for our game
         Game.active = True
         while Game.active:
             draw_main_title()
-
-            print()
+            Game.battle()
+    
+    def render_game() -> None:
+        print(f"Your health: {Game.health}/100")
+        print(f"Enemy health: {""}")
+    
+    def battle() -> None:
+        
+        action = menu(
+            title = transcriber.get_index(17),
+            prompt = transcriber.get_index(18),
+            options = {}
+        ).lower().strip()
 
 # ---- Settings ----
 
@@ -150,7 +173,21 @@ for obj in Game.__dict__.values(): # Load the namespace to be according to progr
     if callable(obj): obj = staticmethod(obj)
 Settings.load()
 
+# ---- meta options ----
+
+# We have these options because of how our settings menu is made. 
+# It is not togglable, but anything that requires a setting will still be set there.
+draw_title(Fore.CYAN + Style.BRIGHT + "GLADIATORS" + Style.RESET_ALL)
+print(Style.DIM + "Read the documentation for a full comprehensive list of meta-options\nLeave this field empty if you want the casual experience\n" + Style.RESET_ALL)
+game_options_input = input("Select game options (f.e 'no music, no name, ...') ").lower().split(",")
+game_options = []
+for option in game_options_input:
+    game_options.append(option.strip())
+
 Game.background_music = background_sound()
+
+if "no music" in game_options:
+    Game.background_music.stop()
 
 # ---- Language ----
 
@@ -167,8 +204,12 @@ draw_main_title = lambda: draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_
 
 # ---- Introduction ----
 
-draw_main_title()
-Game.player_name = input(transcriber.get_index(3)) # Select a name
+if "no name" in game_options:
+    Game.player_name = "Unknown"
+else:
+    while not Game.player_name:
+        draw_main_title()
+        Game.player_name = input(transcriber.get_index(3)) # Select a name
 
 difficulty = ""
 while not difficulty in ("0", "1", "2"):
