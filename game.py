@@ -81,6 +81,7 @@ class Settings(Enum):
 
 class Game: # Create a namespace for our game
     player_name: str # The player name
+    difficulty: int = 1
     active: bool = False # Wheter the game is actively running or not
 
     def menu() -> None: # Start rendering the menu
@@ -157,6 +158,12 @@ draw_main_title = lambda: draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_
 
 draw_main_title()
 Game.player_name = input(transcriber.get_index(3)) # Select a name
+
+difficulty = ""
+while not difficulty in ("0", "1", "2"):
+    draw_main_title()
+    difficulty = input(transcriber.get_index(15))
+Game.difficulty = int(difficulty)
 
 print("\n" + transcriber.get_index(4))
 for i in range(10): # We'll make a small loading scene

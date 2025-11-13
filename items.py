@@ -1,7 +1,9 @@
 from dataclasses import dataclass
 import random
 
-rng = random.Random(42)
+from constants import RANDOM_SEED
+
+rng = random.Random(RANDOM_SEED)
 
 @dataclass
 class Item:
@@ -9,5 +11,5 @@ class Item:
     damage: int
     damage_chance: float
 
-    def attack(self) -> int:
+    def should_attack(self) -> int:
         return self.damage if rng.random() <= self.damage_chance else 0

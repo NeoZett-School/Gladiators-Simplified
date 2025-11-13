@@ -7,6 +7,20 @@ import random
 
 from constants import NAMES, WEAPONS
 
+####################################################
+# State machine works as a smart state familiarity #
+#                                                  #
+# ------------------------------------------------ #
+# Agressive - Higher attack and attack rate        #
+# Protective - Greater defenses, attacks less but  #
+# also lowers chance to be attacked.               #
+####################################################
+
+
+class StateMachine:
+    class State:
+        ...
+
 @dataclass
 class Enemy:
     name: str = field(init=False)

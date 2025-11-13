@@ -11,3 +11,5 @@ WEAPONS = [
     Item("Trident", 8, 0.25),
     Item("")
 ]
+
+RANDOM_SEED = 42
