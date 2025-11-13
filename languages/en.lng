@@ -16,3 +16,18 @@ Off
 Chose difficulty, 0, 1 or 2 (Easy to hard): 
 Your weapons
 Select one weapon: 
+Fighting...
+You did player_damage using action_name
+Enemy did enemy_damage using enemy_weapon
+You (player_name) vs. Enemy (enemy_name)
+Round game_round
+
+Your health: player_health/100
+Enemy health: enemy_health/100
+You lost... The emperor may give you another chance...
+And you... 
+survived!
+lost!
+You lost.
+ You got a second chance anyway.
+You won and took all his gear!

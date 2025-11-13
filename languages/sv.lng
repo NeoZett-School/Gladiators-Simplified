@@ -16,3 +16,18 @@ Av
 Välj svårighets grad, 0, 1 eller 2 (Enkelt till svårt): 
 Dinna vapen
 Välj ett vapen: 
+Slås...
+Du gjorde player_damage och använde action_name
+Fienden gjorde enemy_damage och använde enemy_weapon
+Du (player_name) vs. Fienden (enemy_name)
+Runda game_round
+
+Din hälsa: player_health/25
+Fiendens hälsa: enemy_health/25
+Du förlorade... kejsaren kan ge dig en andra chans...
+Och du... 
+van!
+förlorade!
+Du förlorade.
+ Du fick en andra chans ändå.
+Du van och tog alla hans resurser!

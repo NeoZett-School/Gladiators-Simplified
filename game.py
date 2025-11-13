@@ -1,4 +1,4 @@
-from typing import List, Dict, TypeVar, Callable, Generic, ValuesView, Any
+from typing import List, Dict, TypeVar, Callable, Generic, ValuesView, Optional, Any
 from colorama import init as colorama_init, Fore, Back, Style
 from dataclasses import dataclass, field
 from translator import Transcriber, Language
@@ -6,7 +6,7 @@ from playsound3.playsound3 import Sound
 from playsound3 import playsound
 from enum import Enum
 from items import Item, WEAPONS
-from enemies import Enemy
+from enemies import Enemy, EnemyState
 import constants
 import random
 import time
@@ -109,13 +109,16 @@ class Game: # Create a namespace for our game
     difficulty: int = 1
     active: bool = False # Wheter the game is actively running or not
 
-    health: int = 100
+    health: int = 25
     weapons: List[Item] = [
         rng.choice(WEAPONS)
     ]
 
     background_music: Sound
     enemy: Enemy = None
+    round: int = 1
+
+    log: str = None
 
     def toggle_music() -> None:
         if Game.background_music:
@@ -177,18 +180,102 @@ class Game: # Create a namespace for our game
             Game.battle()
     
     def render_game() -> None:
-        print(f"Your health: {Game.health}/100")
-        print(f"Enemy health: {Game.enemy.health}/100")
+        print(
+            transcriber.get_index(21, 27)\
+                .replace("player_name", Game.player_name)\
+                .replace("enemy_name", Game.enemy.name)\
+                .replace("game_round", str(Game.round))\
+                .replace("player_health", str(Game.health))\
+                .replace("enemy_health", str(Game.enemy.health))
+        )
+        print()
+
+        if Game.log:
+            print(Game.log)
+        
+        print()
     
-    def battle() -> None:
+    def battle() -> Optional[bool]:
         if not Game.enemy:
             Game.enemy = Enemy()
-            Game.enemy.health = 100
-        action = menu(
+            Game.enemy.health = 25
+            Game.enemy.state = EnemyState.CASUAL
+        
+        Game.render_game()
+
+        options: Dict[str, Item] = {}
+        for i, weapon in enumerate(Game.weapons):
+            options[str(i+1)] = weapon
+
+        action_name = menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
-            options = {}
+            options = {k: v.name for k, v in options.items()}
         ).lower().strip()
+
+        draw_main_title()
+
+        print(transcriber.get_index(18))
+
+        action = options.get(action_name)
+
+        if not action:
+            Game.active = False
+            return
+
+        player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance)
+        enemy_damage = Game.enemy.damage_now()
+
+        Game.health = Game.health - enemy_damage
+        Game.enemy.health = Game.enemy.health - player_damage
+
+        Game.log = f"| Log\n{transcriber.get_index(19, 21)\
+                            .replace("player_damage", str(player_damage))\
+                            .replace("action_name", action.name)\
+                            .replace("enemy_damage", str(enemy_damage))\
+                            .replace("enemy_weapon", Game.enemy.weapon.name)}"
+
+        if Game.health <= 0:
+            Game.loss()
+        elif Game.enemy.health <= 0:
+            Game.win()
+
+        time.sleep(max(rng.random() * 1, 0.5))
+
+        Game.round += 1
+    
+    def loss() -> None:
+        time.sleep(0.25)
+        draw_main_title()
+
+        print(transcriber.get_index(26))
+
+        print(transcriber.get_index(27) + "\r", end="")
+
+        second_chance = True
+
+        time.sleep(max(rng.random() * 10, 2))
+
+        if second_chance:
+            print(transcriber.get_index(27) + transcriber.get_index(28))
+        else:
+            print(transcriber.get_index(27) + transcriber.get_index(29))
+
+        Game.log = f"| Log\n{transcriber.get_index(30)}{transcriber.get_index(31) if second_chance else ""}"
+
+        time.sleep(5.0)
+        Game.reset()
+    
+    def win() -> None:
+        Game.log = "| Log\n" + transcriber.get_index(32)
+        if not Game.enemy.weapon in Game.weapons:
+            Game.weapons.append(Game.enemy.weapon)
+        Game.reset()
+    
+    def reset() -> None:
+        Game.enemy = None
+        Game.health = 25
+        Game.round = 1
 
 # ---- Settings ----
 
@@ -226,7 +313,7 @@ Game.difficulty = int(difficulty)
 
 draw_main_title()
 
-print("\n" + transcriber.get_index(4))
+print(transcriber.get_index(4))
 for i in range(10): # We'll make a small loading scene
     print(f"\r[{Fore.GREEN + Style.BRIGHT}{"-"*i}{Style.RESET_ALL + Fore.YELLOW}{"-"*(10-i)}{Style.RESET_ALL}]", end="")
     time.sleep(0.12)
