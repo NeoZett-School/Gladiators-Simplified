@@ -18,6 +18,8 @@ import os
 if __name__ != "__main__": 
     sys.exit() # We are importing the script
 
+print("Loading...")
+
 colorama_init() # We'll initialize the colorama module
 
 def clear_screen(): # Create a method to clear the screen
@@ -113,7 +115,7 @@ class Game: # Create a namespace for our game
     ]
 
     background_music: Sound
-    enemy: Enemy
+    enemy: Enemy = None
 
     def toggle_music() -> None:
         if Game.background_music:
@@ -176,13 +178,15 @@ class Game: # Create a namespace for our game
     
     def render_game() -> None:
         print(f"Your health: {Game.health}/100")
-        print(f"Enemy health: {""}")
+        print(f"Enemy health: {Game.enemy.health}/100")
     
     def battle() -> None:
-        
+        if not Game.enemy:
+            Game.enemy = Enemy()
+            Game.enemy.health = 100
         action = menu(
-            title = transcriber.get_index(17),
-            prompt = transcriber.get_index(18),
+            title = transcriber.get_index(16),
+            prompt = transcriber.get_index(17),
             options = {}
         ).lower().strip()
 
