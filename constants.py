@@ -10,3 +10,4 @@ NAMES = [
 ]
 
 RANDOM_SEED = 42
+STATE_CHANGE = (1.0, 0.75, 0.25, 0.1)

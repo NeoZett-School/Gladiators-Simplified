@@ -118,7 +118,7 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
-    scenery: float = 1.0
+    scenery: float = 10.0 # Du börjar med tio scenematik poäng
 
     log: str = None
 
@@ -194,8 +194,7 @@ class Game: # Create a namespace for our game
 
         if Game.log:
             print(Game.log)
-        
-        print()
+            print()
     
     def battle() -> Optional[bool]:
         if not Game.enemy:

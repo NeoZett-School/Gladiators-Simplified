@@ -24,6 +24,7 @@ Round game_round
 
 Your health: player_health/25
 Enemy health: enemy_health/25
+
 You lost... The emperor may give you another chance...
 And you... 
 survived!

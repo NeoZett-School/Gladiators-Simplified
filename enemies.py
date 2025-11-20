@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from items import Item
 from enum import Enum
-from constants import NAMES, RANDOM_SEED
+from constants import NAMES, RANDOM_SEED, STATE_CHANGE
 from items import WEAPONS
 import random
 
@@ -41,8 +41,5 @@ class Enemy:
         self.weapon = rng.choice(WEAPONS)
     
     def damage_now(self) -> int:
-        self.state = rng.choices(
-            (self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE),
-            (1.0, 0.75, 0.25, 0.1)
-        )[0]
+        self.state = rng.choices((self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE), STATE_CHANGE)[0]
         return int(max(self.weapon.damage_now(self.state.value.this_attack_chance) - self.state.value.damage_decrement, 0))
