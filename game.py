@@ -262,8 +262,8 @@ class Game: # Create a namespace for our game
             Game.active = False
             return
 
-        player_drift = 1.15 - rng.random() * 0.30
-        enemy_drift = 1.15 - rng.random() * 0.30
+        player_drift = 1.15 - rng.random() * 0.30 + (1.5 if Game.difficulty == 0 else -0.5 if Game.difficulty == 2 else 0.0)
+        enemy_drift = 1.15 - rng.random() * 0.30 + (-0.5 if Game.difficulty == 0 else 1.5 if Game.difficulty == 2 else 0.0)
         player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift)
         enemy_damage = Game.enemy.damage_now(enemy_drift)
         Game.scenery *= action.scenery
@@ -294,7 +294,7 @@ class Game: # Create a namespace for our game
 
         print(transcriber.get_index(27) + "\r", end="")
 
-        second_chance = rng.random() < Game.scenery
+        second_chance = rng.random() < Game.scenery * (0.75 if Game.difficulty == 2 else 1.25 if Game.difficulty == 0 else 1.0)
 
         time.sleep(max(rng.random() * 10, 2))
 
