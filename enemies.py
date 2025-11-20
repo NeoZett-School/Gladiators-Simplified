@@ -22,12 +22,11 @@ class StateMachine:
     class State:
         this_attack_chance: float
         other_attack_chance: float
-        damage_decrement: float
 
 class EnemyState(Enum):
-    AGGRESIVE = StateMachine.State(1.25, 1.0, 1.5)
-    PROTECTIVE = StateMachine.State(1.0, 0.75, 1.0)
-    CASUAL = StateMachine.State(1.0, 1.0, 0.0)
+    AGGRESIVE = StateMachine.State(1.25, 1.0)
+    PROTECTIVE = StateMachine.State(1.0, 0.75)
+    CASUAL = StateMachine.State(1.0, 1.0)
 
 @dataclass
 class Enemy:
@@ -40,6 +39,6 @@ class Enemy:
         self.name = rng.choice(NAMES)
         self.weapon = rng.choice(WEAPONS)
     
-    def damage_now(self) -> int:
+    def damage_now(self, variable_chance: float) -> int:
         self.state = rng.choices((self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE), STATE_CHANGE)[0]
-        return int(max(self.weapon.damage_now(self.state.value.this_attack_chance) - self.state.value.damage_decrement, 0))
+        return int(self.weapon.damage_now(self.state.value.this_attack_chance * variable_chance))

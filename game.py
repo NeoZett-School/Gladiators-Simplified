@@ -54,7 +54,7 @@ SettingType = TypeVar("SettingType", bound=Any)
 class Setting(Generic[SettingType]):
     value: SettingType
     toggle: bool = field(default=False)
-    custom_logic: Callable[(...), Any] = field(default=lambda: None)
+    custom_logic: Callable[..., Any] = field(default=lambda: None)
     enum: "Settings" = field(init=False)
 
 # We'll create a enum for different settings
@@ -118,7 +118,7 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
-    scenery: float = 10.0 # Du börjar med tio scenematik poäng
+    scenery: float = 100.0 # You begin with hundred scenery points.
 
     log: str = None
 
@@ -224,8 +224,8 @@ class Game: # Create a namespace for our game
             Game.active = False
             return
 
-        player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance)
-        enemy_damage = Game.enemy.damage_now()
+        player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance + (rng.random() / 2) + 0.25)
+        enemy_damage = Game.enemy.damage_now(0.25 + rng.random() * 0.5)
         Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
@@ -279,11 +279,9 @@ class Game: # Create a namespace for our game
         Game.health = 25
         Game.round = 1
 
-# ---- Settings ----
+# ------ Settings ------
 
-# Loadin
-for obj in Game.__dict__.values(): # Load the namespace to be according to programming standards
-    if callable(obj): obj = staticmethod(obj)
+# Loadin...
 Settings.load()
 
 # ---- Language ----
