@@ -7,8 +7,10 @@ from playsound3 import playsound
 from enum import Enum
 from items import Item, WEAPONS
 from enemies import Enemy, EnemyState
+from achievements import Achievement, ACHIEVEMENTS
 import constants
 import random
+import msvcrt
 import time
 import sys
 import os
@@ -120,6 +122,8 @@ class Game: # Create a namespace for our game
 
     scenery: float = 100.0 # You begin with hundred scenery points.
 
+    achievements: List[Achievement] = []
+
     log: str = None
 
     def toggle_music() -> None:
@@ -137,7 +141,8 @@ class Game: # Create a namespace for our game
             options = {
                 "1": transcriber.get_index(7),
                 "2": transcriber.get_index(8),
-                "3": transcriber.get_index(9)
+                "3": transcriber.get_index(33),
+                "4": transcriber.get_index(9)
             }
         ).lower().strip()
         match directory: # do something depending on the input
@@ -146,6 +151,8 @@ class Game: # Create a namespace for our game
             case "2":
                 Game.options()
             case "3":
+                Game.stats()
+            case "4":
                 sys.exit()
         Game.menu() # We'll just restart the menu if we don't enter anything valid
     
@@ -175,6 +182,18 @@ class Game: # Create a namespace for our game
         else: setting.handle_input("")
         Game.options()
     
+    def stats() -> None:
+        draw_main_title()
+        print(transcriber.get_index(33))
+        print()
+        if len(Game.achievements) > 0:
+            for achievement in Game.achievements:
+                print(achievement.text)
+        else: print(transcriber.get_index(34))
+        print()
+        print(transcriber.get_index(35))
+        msvcrt.getch()
+    
     def game() -> None: # We'll handle the actual game logic here
         Game.active = True
         while Game.active:
@@ -197,6 +216,14 @@ class Game: # Create a namespace for our game
             print()
     
     def battle() -> Optional[bool]:
+        for achievement in ACHIEVEMENTS:
+            required_round = achievement.requirements.get("round")
+            has_round = True if required_round is not None else False
+            if all([
+                has_round and Game.round >= required_round
+            ]):
+                Game.achievements.append(achievement)
+        
         if not Game.enemy:
             Game.enemy = Enemy()
             Game.enemy.health = 25
@@ -208,15 +235,26 @@ class Game: # Create a namespace for our game
         for i, weapon in enumerate(Game.weapons):
             options[str(i+1)] = weapon
 
+        retreat = str(len(options) + 1)
+
         action_name = menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
-            options = {k: v.name for k, v in options.items()}
+            options = {k: v.name for k, v in options.items()} | {retreat: "retreat"}
         ).lower().strip()
 
         draw_main_title()
 
         print(transcriber.get_index(18))
+
+        if action_name == retreat:
+            Game.log = "You retreated... You lost some items..."
+            for weapon in Game.weapons[:]:
+                if len(Game.weapons) == 1: break
+                if rng.random() < 0.5:
+                    Game.weapons.remove(weapon)
+            Game.reset()
+            return
 
         action = options.get(action_name)
 
@@ -224,8 +262,10 @@ class Game: # Create a namespace for our game
             Game.active = False
             return
 
-        player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance + (rng.random() / 2) + 0.25)
-        enemy_damage = Game.enemy.damage_now(0.25 + rng.random() * 0.5)
+        player_drift = 1.15 - rng.random() * 0.30
+        enemy_drift = 1.15 - rng.random() * 0.30
+        player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift)
+        enemy_damage = Game.enemy.damage_now(enemy_drift)
         Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
@@ -262,6 +302,9 @@ class Game: # Create a namespace for our game
             print(transcriber.get_index(27) + transcriber.get_index(28))
         else:
             print(transcriber.get_index(27) + transcriber.get_index(29))
+            Game.weapons = [
+                rng.choice(WEAPONS)
+            ]
 
         Game.log = f"| Log\n{transcriber.get_index(30)}{transcriber.get_index(31) if second_chance else ""}"
 

@@ -39,6 +39,6 @@ class Enemy:
         self.name = rng.choice(NAMES)
         self.weapon = rng.choice(WEAPONS)
     
-    def damage_now(self, variable_chance: float) -> int:
+    def damage_now(self, variable_chance: float = 1.0) -> int:
         self.state = rng.choices((self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE), STATE_CHANGE)[0]
         return int(self.weapon.damage_now(self.state.value.this_attack_chance * variable_chance))

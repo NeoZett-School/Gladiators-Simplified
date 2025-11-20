@@ -9,5 +9,5 @@ NAMES = [
     "Likare"
 ]
 
-RANDOM_SEED = 42
-STATE_CHANGE = (1.0, 0.75, 0.25, 0.1)
+RANDOM_SEED = None
+STATE_CHANGE = (1.0, 0.15, 0.05, 0.02)

@@ -16,5 +16,5 @@ class Item:
 
 WEAPONS = [
     Item("Axe", 5, 0.75, 0.5),
-    Item("Trident", 8, 0.25, 0.75),
+    Item("Trident", 8, 0.5, 0.75),
 ]
