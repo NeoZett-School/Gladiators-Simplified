@@ -118,6 +118,8 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
+    scenery: float = 1.0
+
     log: str = None
 
     def toggle_music() -> None:
@@ -181,7 +183,7 @@ class Game: # Create a namespace for our game
     
     def render_game() -> None:
         print(
-            transcriber.get_index(21, 27)\
+            transcriber.get_index(21, 26)\
                 .replace("player_name", Game.player_name)\
                 .replace("enemy_name", Game.enemy.name)\
                 .replace("game_round", str(Game.round))\
@@ -225,6 +227,7 @@ class Game: # Create a namespace for our game
 
         player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance)
         enemy_damage = Game.enemy.damage_now()
+        Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
         Game.enemy.health = Game.enemy.health - player_damage
@@ -252,7 +255,7 @@ class Game: # Create a namespace for our game
 
         print(transcriber.get_index(27) + "\r", end="")
 
-        second_chance = True
+        second_chance = rng.random() < Game.scenery
 
         time.sleep(max(rng.random() * 10, 2))
 
@@ -283,8 +286,6 @@ class Game: # Create a namespace for our game
 for obj in Game.__dict__.values(): # Load the namespace to be according to programming standards
     if callable(obj): obj = staticmethod(obj)
 Settings.load()
-
-Game.background_music = create_background_music()
 
 # ---- Language ----
 
@@ -320,4 +321,5 @@ for i in range(10): # We'll make a small loading scene
 
 # ---- Start the game ----
 
+Game.background_music = create_background_music()
 Game.menu()

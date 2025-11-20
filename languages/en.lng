@@ -22,8 +22,8 @@ Enemy did enemy_damage using enemy_weapon
 You (player_name) vs. Enemy (enemy_name)
 Round game_round
 
-Your health: player_health/100
-Enemy health: enemy_health/100
+Your health: player_health/25
+Enemy health: enemy_health/25
 You lost... The emperor may give you another chance...
 And you... 
 survived!
