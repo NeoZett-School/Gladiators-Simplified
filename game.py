@@ -239,7 +239,7 @@ class Game: # Create a namespace for our game
         action_name = menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
-            options = {k: v.name for k, v in options.items()} | {retreat: "Retreat"}
+            options = {k: v.name for k, v in options.items()} | ({retreat: "Retreat"} if Game.enemy.health < 8 or Game.difficulty == 0 else {})
         ).lower().strip()
 
         draw_main_title()

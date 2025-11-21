@@ -19,5 +19,15 @@ WEAPONS = [
     Item("Trident", 8, 0.7, 0.75),
     Item("Long Sword", 7, 0.85, 0.65),
     Item("Knife", 10, 0.45, 0.75),
-    Item("Bow", 6, 0.6, 0.95)
+    Item("Bow", 9, 0.6, 0.95),
+    Item("War Hammer", 12, 0.55, 0.4),
+    Item("Short Sword", 6, 0.9, 0.6),
+    Item("Spear", 7, 0.8, 0.7),
+    Item("Crossbow", 11, 0.5, 0.9),
+    Item("Dagger", 4, 0.98, 0.8),
+    Item("Mace", 9, 0.65, 0.45),
+    Item("Scimitar", 8, 0.75, 0.7),
+    Item("Throwing Axe", 6, 0.7, 0.85),
+    Item("Halberd", 10, 0.6, 0.55),
+    Item("Whip", 3, 0.9, 1.0),
 ]
