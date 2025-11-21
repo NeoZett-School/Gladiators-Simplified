@@ -31,7 +31,7 @@ WEAPONS = [
     Item("Halberd", 10, 0.6, 0.55),        # rare
     Item("Whip", 3, 0.9, 1.0),             # common
     Item("Escalibur", 20, 0.1, 0.95),      # legendary
-    Item("Reavers Pike", 28, 0.6, 0.95)    # legendary/overpowered
+    Item("Reavers Pike", 28, 0.8, 0.95)    # legendary/overpowered
 ]
 
 # Rarity weights matching the order above
