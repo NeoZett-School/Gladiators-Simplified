@@ -32,6 +32,7 @@ WEAPONS = [
     Item("Whip", 3, 0.9, 1.0),             # common
     Item("Escalibur", 20, 0.1, 0.95),      # legendary
     Item("Reavers Pike", 28, 0.6, 0.95),   # legendary/overpowered
+    Item("Gods Finger", 100, 1.0, 1.0),
     Item("Air", 0.0, 0.0, 0.0)
 ]
 
@@ -55,6 +56,7 @@ WEAPON_RARITY = [
     1.0,  # Whip
     0.1,   # Escalibur (legendary)
     0.05,    # Reavers Pike (legendary/strongest)
+    0.0,    # Gods Finger is also unobtainable
     0.0    # Air is unobtainable, unless with the debug gamemode
 ]
 
