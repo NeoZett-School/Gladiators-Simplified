@@ -120,10 +120,16 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
+    loses: int = 0
+    wins: int = 0
+
     has_first_game_achievement: bool = False
     has_trident_achivement: bool = False
     has_win_achivement: bool = False
     has_inventory_achievement: bool = False
+    has_round_ten_achivement: bool = False
+    has_lose_five_achivement: bool = False
+    has_win_five_achivement: bool = False
 
     scenery: float = 100.0 # You begin with hundred scenery points.
 
@@ -225,6 +231,10 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["First Game"])
             Game.has_first_game_achievement = True
         
+        if not Game.has_round_ten_achivement:
+            Game.achievements.append(ACHIEVEMENTS["Round Ten"])
+            Game.has_round_ten_achivement = True
+        
         if not Game.has_inventory_achievement and len(Game.weapons) >= 5:
             Game.achievements.append(ACHIEVEMENTS["Inventory At Large"])
             Game.has_inventory_achievement = True
@@ -304,6 +314,11 @@ class Game: # Create a namespace for our game
         Game.round += 1
     
     def loss() -> None:
+        Game.loses += 1
+        if not Game.has_lose_five_achivement and Game.loses >= 5:
+            Game.achievements.append(ACHIEVEMENTS["Lose Five"])
+            Game.has_lose_five_achivement = True
+
         time.sleep(0.25)
         draw_main_title()
 
@@ -329,9 +344,15 @@ class Game: # Create a namespace for our game
         Game.reset()
     
     def win() -> None:
+        Game.wins += 1
+
         if not Game.has_win_achivement:
             Game.achievements.append(ACHIEVEMENTS["First Win"])
             Game.has_win_achivement = True
+        
+        if not Game.has_win_five_achivement and Game.wins >= 5:
+            Game.achievements.append(ACHIEVEMENTS["Win Five"])
+            Game.has_win_five_achivement = True
 
         Game.log = "| Log\n" + transcriber.get_index(32)
         if not Game.enemy.weapon in Game.weapons:
