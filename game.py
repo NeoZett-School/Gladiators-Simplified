@@ -5,7 +5,7 @@ from translator import Transcriber, Language
 from playsound3.playsound3 import Sound
 from playsound3 import playsound
 from enum import Enum
-from items import Item, WEAPONS
+from items import Item, get_weapon
 from enemies import Enemy, EnemyState
 from achievements import Achievement, ACHIEVEMENTS
 import constants
@@ -113,7 +113,7 @@ class Game: # Create a namespace for our game
 
     health: int = 25
     weapons: List[Item] = [
-        rng.choice(WEAPONS)
+        get_weapon()
     ]
 
     background_music: Sound
@@ -263,7 +263,7 @@ class Game: # Create a namespace for our game
         print(transcriber.get_index(18))
 
         if action_name == retreat:
-            Game.log = transcriber.get_index()
+            Game.log = transcriber.get_index(35)
             for weapon in Game.weapons[:]:
                 if len(Game.weapons) == 1: break
                 if rng.random() < (0.75 if Game.difficulty == 0 else 0.25):
@@ -335,7 +335,7 @@ class Game: # Create a namespace for our game
         else:
             print(transcriber.get_index(27) + transcriber.get_index(29))
             Game.weapons = [
-                rng.choice(WEAPONS)
+                get_weapon()
             ]
 
         Game.log = f"| Log\n{transcriber.get_index(30)}{transcriber.get_index(31) if second_chance else ""}"

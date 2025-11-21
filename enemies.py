@@ -2,7 +2,7 @@ from dataclasses import dataclass, field
 from items import Item
 from enum import Enum
 from constants import NAMES, RANDOM_SEED, STATE_CHANGE
-from items import WEAPONS
+from items import get_weapon
 import random
 
 ####################################################
@@ -37,7 +37,7 @@ class Enemy:
 
     def __post_init__(self) -> None:
         self.name = rng.choice(NAMES)
-        self.weapon = rng.choice(WEAPONS)
+        self.weapon = get_weapon()
     
     def damage_now(self, variable_chance: float = 1.0) -> int:
         self.state = rng.choices((self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE), STATE_CHANGE)[0]
