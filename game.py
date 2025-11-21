@@ -125,6 +125,7 @@ class Game: # Create a namespace for our game
     player_damage_cache: int = 0.0 # Smart auto balancing!
     enemy_damage_cache: int = 0.0
 
+    total_rounds: int = 0
     loses: int = 0
     wins: int = 0
 
@@ -153,6 +154,9 @@ class Game: # Create a namespace for our game
         draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
         print(f"{Style.DIM}Makaronies are your unit of comparision.{Style.RESET_ALL}")
         print(f"{Game.currency} Makaronies earned")
+        print(f"{Game.total_rounds} Total rounds")
+        print(f"{Game.wins} Wins")
+        print(f"{Game.loses} Loses")
         print()
         directory = menu(
             title = transcriber.get_index(5), 
@@ -365,6 +369,7 @@ class Game: # Create a namespace for our game
         time.sleep(max(rng.random() * 1, 0.5))
 
         Game.round += 1
+        Game.total_rounds += 1
     
     def loss() -> None:
         Game.loses += 1
