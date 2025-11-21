@@ -449,6 +449,15 @@ if difficulty == "3":
     Game.weapons.clear()
     Game.weapons = WEAPONS.copy()
 
+    Game.has_first_game_achievement = True
+    Game.has_trident_achivement = True
+    Game.has_win_achivement = True
+    Game.has_inventory_achievement = True
+    Game.has_round_ten_achivement = True
+    Game.has_lose_five_achivement = True
+    Game.has_win_five_achivement = True
+    Game.achievements = list(ACHIEVEMENTS.values())
+
 draw_main_title()
 
 print(transcriber.get_index(4))
