@@ -278,7 +278,7 @@ class Game: # Create a namespace for our game
             return
         
         if action.name == "Trident" and not Game.has_trident_achivement:
-            Game.achievements.append(Achievement["The Power Of The Trident"])
+            Game.achievements.append(ACHIEVEMENTS["The Power Of The Trident"])
             Game.has_trident_achivement = True
 
         player_drift = 1.35 - rng.random() * 0.30 + (1.5 if Game.difficulty == 0 else -0.5 if Game.difficulty == 2 else 0.0)
