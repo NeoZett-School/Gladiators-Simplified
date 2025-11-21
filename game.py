@@ -5,7 +5,7 @@ from translator import Transcriber, Language
 from playsound3.playsound3 import Sound
 from playsound3 import playsound
 from enum import Enum
-from items import Item, WEAPONS, get_weapon
+from items import Item, WEAPONS, WEAPON_RARITY, get_weapon
 from enemies import Enemy, EnemyState
 from achievements import Achievement, ACHIEVEMENTS
 import constants
@@ -120,6 +120,8 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
+    currency: int = 0
+
     player_damage_cache: int = 0.0 # Smart auto balancing!
     enemy_damage_cache: int = 0.0
 
@@ -149,6 +151,9 @@ class Game: # Create a namespace for our game
 
     def menu() -> None: # Start rendering the menu
         draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
+        print(f"{Style.DIM}Makaronies are your unit of comparision.{Style.RESET_ALL}")
+        print(f"{Game.currency} Makaronies earned")
+        print()
         directory = menu(
             title = transcriber.get_index(5), 
             prompt = transcriber.get_index(6), 
@@ -402,6 +407,8 @@ class Game: # Create a namespace for our game
         if not Game.has_win_five_achivement and Game.wins >= 5:
             Game.achievements.append(ACHIEVEMENTS["Win Five"])
             Game.has_win_five_achivement = True
+        
+        Game.currency += int((1 - WEAPON_RARITY[WEAPONS.index(Game.enemy.weapon)]) * Game.enemy.weapon.damage * Game.enemy.weapon.damage_chance * 10)
 
         Game.log = "| Log\n" + transcriber.get_index(32)
         if not Game.enemy.weapon in Game.weapons:
