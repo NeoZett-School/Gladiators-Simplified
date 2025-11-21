@@ -151,61 +151,61 @@ class Game: # Create a namespace for our game
             Game.background_music = create_background_music()
 
     def menu() -> None: # Start rendering the menu
-        draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
-        print((f"{Fore.RED}HARD{Fore.RESET}" if Game.difficulty == 2 else f"{Fore.BLUE}NORMAL{Fore.RESET}" if Game.difficulty == 1 else f"{Fore.GREEN}EASY{Fore.RESET}" if Game.difficulty == 0 else f"{Fore.MAGENTA}EXPERIMENTAL{Fore.RESET}"))
-        print()
-        print(f"{Style.DIM}Makaronies are your unit of comparision.{Style.RESET_ALL}")
-        print(f"{Game.currency} Makaronies earned")
-        print(f"{Game.total_rounds} Total rounds")
-        print(f"{Game.wins} Wins")
-        print(f"{Game.loses} Loses")
-        print()
-        directory = menu(
-            title = transcriber.get_index(5), 
-            prompt = transcriber.get_index(6), 
-            options = {
-                "1": transcriber.get_index(7),
-                "2": transcriber.get_index(8),
-                "3": transcriber.get_index(33),
-                "4": transcriber.get_index(9)
-            }
-        ).lower().strip()
-        match directory: # do something depending on the input
-            case "1":
-                Game.game()
-            case "2":
-                Game.options()
-            case "3":
-                Game.stats()
-            case "4":
-                sys.exit()
-        Game.menu() # We'll just restart the menu if we don't enter anything valid
+        while True:
+            draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
+            print((f"{Fore.RED}HARD{Fore.RESET}" if Game.difficulty == 2 else f"{Fore.BLUE}NORMAL{Fore.RESET}" if Game.difficulty == 1 else f"{Fore.GREEN}EASY{Fore.RESET}" if Game.difficulty == 0 else f"{Fore.MAGENTA}EXPERIMENTAL{Fore.RESET}"))
+            print()
+            print(f"{Style.DIM}Makaronies are your unit of comparision.{Style.RESET_ALL}")
+            print(f"{Game.currency} Makaronies earned")
+            print(f"{Game.total_rounds} Total rounds")
+            print(f"{Game.wins} Wins")
+            print(f"{Game.loses} Loses")
+            print()
+            directory = menu(
+                title = transcriber.get_index(5), 
+                prompt = transcriber.get_index(6), 
+                options = {
+                    "1": transcriber.get_index(7),
+                    "2": transcriber.get_index(8),
+                    "3": transcriber.get_index(33),
+                    "4": transcriber.get_index(9)
+                }
+            ).lower().strip()
+            match directory: # do something depending on the input
+                case "1":
+                    Game.game()
+                case "2":
+                    Game.options()
+                case "3":
+                    Game.stats()
+                case "4":
+                    sys.exit()
     
     def options() -> None: # Start rendering the options
-        draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(2).upper() + Style.RESET_ALL)
+        while True:
+            draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(2).upper() + Style.RESET_ALL)
 
-        options: Dict[str, str] = {}
-        settings: Dict[str, Settings] = {}
-        for i, v in enumerate(Settings.all()): # We'll generate all the options before we can use them in the menu
-            i = str(i + 1)
-            settings[i] = v
-            options[i] = v.name + f" [{Fore.MAGENTA}{v.text_value}{Style.RESET_ALL}]"
+            options: Dict[str, str] = {}
+            settings: Dict[str, Settings] = {}
+            for i, v in enumerate(Settings.all()): # We'll generate all the options before we can use them in the menu
+                i = str(i + 1)
+                settings[i] = v
+                options[i] = v.name + f" [{Fore.MAGENTA}{v.text_value}{Style.RESET_ALL}]"
 
-        setting_name = menu(
-            title = transcriber.get_index(10),
-            prompt = transcriber.get_index(11),
-            options = options
-        ).lower().strip()
+            setting_name = menu(
+                title = transcriber.get_index(10),
+                prompt = transcriber.get_index(11),
+                options = options
+            ).lower().strip()
 
-        setting = settings.get(
-            setting_name.lower().strip()
-        )
-        if not setting: # We'll exit the settings if the setting was incorrect
-            return
-        if not setting.toggle:
-            setting.handle_input(input(transcriber.get_index(12)))
-        else: setting.handle_input("")
-        Game.options()
+            setting = settings.get(
+                setting_name.lower().strip()
+            )
+            if not setting: # We'll exit the settings if the setting was incorrect
+                return
+            if not setting.toggle:
+                setting.handle_input(input(transcriber.get_index(12)))
+            else: setting.handle_input("")
     
     def stats() -> None:
         draw_main_title()
