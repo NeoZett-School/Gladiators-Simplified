@@ -31,7 +31,8 @@ WEAPONS = [
     Item("Halberd", 10, 0.6, 0.55),        # rare
     Item("Whip", 3, 0.9, 1.0),             # common
     Item("Escalibur", 20, 0.1, 0.95),      # legendary
-    Item("Reavers Pike", 28, 0.6, 0.95)    # legendary/overpowered
+    Item("Reavers Pike", 28, 0.6, 0.95),   # legendary/overpowered
+    Item("Air", 0.0, 0.0, 0.0)
 ]
 
 # Rarity weights matching the order above
@@ -53,7 +54,8 @@ WEAPON_RARITY = [
     0.3,   # Halberd
     1.0,  # Whip
     0.1,   # Escalibur (legendary)
-    0.05    # Reavers Pike (legendary/strongest)
+    0.05,    # Reavers Pike (legendary/strongest)
+    0.0    # Air is unobtainable, unless with the debug gamemode
 ]
 
 def get_weapon() -> Item:
