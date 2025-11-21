@@ -30,4 +30,5 @@ WEAPONS = [
     Item("Throwing Axe", 6, 0.7, 0.85),
     Item("Halberd", 10, 0.6, 0.55),
     Item("Whip", 3, 0.9, 1.0),
+    Item("Escalibur", 20, 0.1, 0.95)
 ]
