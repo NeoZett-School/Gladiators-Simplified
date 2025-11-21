@@ -14,7 +14,7 @@ Välj en (Annars, lämna):
 På
 Av
 Välj svårighets grad, 0, 1 eller 2 (Enkelt till svårt): 
-Dinna vapen
+Dina vapen
 Välj ett vapen: 
 Slåss...
 Du gjorde player_damage och använde action_name
@@ -26,11 +26,12 @@ Din hälsa: player_health/25
 Fiendens hälsa: enemy_health/25
 Du förlorade... kejsaren kan ge dig en andra chans...
 Och du... 
-van!
+vann!
 förlorade!
 Du förlorade.
  Du fick en andra chans ändå.
-Du van och tog alla hans resurser!
+Du vann och tog alla hans resurser!
 Prestationer
 Denna listan verkar tom...
 Tryck på vilken knapp för att gå tillbaka
+Du retirerade... och förlorade några vapen...

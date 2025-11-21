@@ -263,7 +263,7 @@ class Game: # Create a namespace for our game
         print(transcriber.get_index(18))
 
         if action_name == retreat:
-            Game.log = "You retreated... You lost some items..."
+            Game.log = transcriber.get_index()
             for weapon in Game.weapons[:]:
                 if len(Game.weapons) == 1: break
                 if rng.random() < (0.75 if Game.difficulty == 0 else 0.25):
