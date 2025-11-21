@@ -120,6 +120,9 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
+    player_damage_cache: int = 0.0 # Smart auto balancing!
+    enemy_damage_cache: int = 0.0
+
     loses: int = 0
     wins: int = 0
 
@@ -281,10 +284,55 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["The Power Of The Trident"])
             Game.has_trident_achivement = True
 
-        player_drift = 1.35 - rng.random() * 0.30 + (0.05 if Game.difficulty == 0 else -0.05 if Game.difficulty == 2 else 0.0)
-        enemy_drift = 1.35 - rng.random() * 0.30 + (-0.05 if Game.difficulty == 0 else 0.05 if Game.difficulty == 2 else 0.0)
-        player_damage = int(action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift) * (1.15 if Game.difficulty == 0 else 0.85 if Game.difficulty == 2 else 1.0))
-        enemy_damage = int(Game.enemy.damage_now(enemy_drift) * (0.85 if Game.difficulty == 0 else 1.15 if Game.difficulty == 2 else 1.0))
+        # helper
+        def clamp(x, lo, hi):
+            return max(lo, min(hi, x))
+
+        # small epsilon to avoid division by zero if both caches are zero
+        EPS = 1e-6
+
+        # Normalized "who is ahead" metric in [0,1]
+        #  - 0.0 => player has done 0 damage and enemy dominated (player factor minimal)
+        #  - 0.5 => balanced
+        #  - 1.0 => player has done all the damage (enemy factor minimal)
+        total = Game.player_damage_cache + Game.enemy_damage_cache + EPS
+        player_share = Game.player_damage_cache / total   # in (0,1)
+        # We want player_factor such that when player_share is 0.5, factor is 0.5
+        # and when player_share is high, player_factor reduces enemy's chance (or vice versa).
+        player_factor = clamp(1.0 - player_share, 0.0, 1.0)
+        enemy_factor = clamp(1.0 - player_factor, 0.0, 1.0)  # equals player_share, but kept explicit
+
+        # drift: base between 1.05 and 1.35 (same distribution as 1.35 - rng.random()*0.30)
+        base_drift = 1.35 - rng.random() * 0.30
+
+        # difficulty modifiers (explicit)
+        if Game.difficulty == 0 or player_factor >= 0.75:      # easy
+            player_diff_mod = +0.05
+            enemy_diff_mod  = -0.05
+        elif Game.difficulty == 2 or enemy_factor >= 0.75:    # hard
+            player_diff_mod = -0.05
+            enemy_diff_mod  = +0.05
+        else:                        # normal (1)
+            player_diff_mod = 0.0
+            enemy_diff_mod  = 0.0
+
+        player_drift = base_drift + player_diff_mod
+        # recompute base for enemy separately so RNG affects both independently (like your original)
+        enemy_drift = 1.35 - rng.random() * 0.30 + enemy_diff_mod
+
+        # Compose variable chances and clamp to [0.0, 1.0]
+        player_variable_chance = clamp(Game.enemy.state.value.other_attack_chance * player_drift, 0.0, 1.0)
+        enemy_variable_chance  = clamp(enemy_drift, 0.0, 1.0)
+
+        # difficulty multipliers for final damage output (explicit)
+        player_damage_mult = 1.15 if Game.difficulty == 0 else 0.85 if Game.difficulty == 2 else 1.0
+        enemy_damage_mult  = 0.85 if Game.difficulty == 0 else 1.15 if Game.difficulty == 2 else 1.0
+
+        player_damage = int(action.damage_now(player_variable_chance) * player_damage_mult)
+        enemy_damage  = int(Game.enemy.damage_now(enemy_variable_chance) * enemy_damage_mult)
+
+        Game.player_damage_cache += player_damage
+        Game.enemy_damage_cache  += enemy_damage
         Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
@@ -360,6 +408,8 @@ class Game: # Create a namespace for our game
         Game.reset()
     
     def reset() -> None:
+        Game.player_damage_cache = 0
+        Game.enemy_damage_cache = 0
         Game.enemy = None
         Game.health = 25
         Game.round = 1
