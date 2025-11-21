@@ -331,8 +331,8 @@ class Game: # Create a namespace for our game
         player_damage = int(action.damage_now(player_variable_chance) * player_damage_mult)
         enemy_damage  = int(Game.enemy.damage_now(enemy_variable_chance) * enemy_damage_mult)
 
-        Game.player_damage_cache += player_damage
-        Game.enemy_damage_cache  += enemy_damage
+        Game.player_damage_cache = Game.player_damage_cache * 0.6 + player_damage * 0.4
+        Game.enemy_damage_cache  = Game.enemy_damage_cache * 0.6 + enemy_damage * 0.4
         Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
