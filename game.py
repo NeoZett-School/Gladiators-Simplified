@@ -408,7 +408,7 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["Win Five"])
             Game.has_win_five_achivement = True
         
-        Game.currency += int((1 - WEAPON_RARITY[WEAPONS.index(Game.enemy.weapon)]) * Game.enemy.weapon.damage * Game.enemy.weapon.damage_chance * 10)
+        Game.currency += int((1 - WEAPON_RARITY[WEAPONS.index(Game.enemy.weapon)]) * Game.enemy.weapon.damage * Game.enemy.weapon.damage_chance * 100)
 
         Game.log = "| Log\n" + transcriber.get_index(32)
         if not Game.enemy.weapon in Game.weapons:
