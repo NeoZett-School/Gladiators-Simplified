@@ -1,6 +1,6 @@
 @echo off
 color 03
-title "Epic Gladiators"
+title Epic Gladiators
 
 py game.py
 

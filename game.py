@@ -120,6 +120,9 @@ class Game: # Create a namespace for our game
     enemy: Enemy = None
     round: int = 1
 
+    has_first_game_achievement: bool = False
+    has_trident_achivement: bool = False
+
     scenery: float = 100.0 # You begin with hundred scenery points.
 
     achievements: List[Achievement] = []
@@ -216,13 +219,9 @@ class Game: # Create a namespace for our game
             print()
     
     def battle() -> Optional[bool]:
-        for achievement in ACHIEVEMENTS:
-            required_round = achievement.requirements.get("round")
-            has_round = True if required_round is not None else False
-            if all([
-                has_round and Game.round >= required_round
-            ]):
-                Game.achievements.append(achievement)
+        if not Game.has_first_game_achievement:
+            Game.achievements.append(ACHIEVEMENTS["First Game"])
+            Game.has_first_game_achievement = True
         
         if not Game.enemy:
             Game.enemy = Enemy()
@@ -240,7 +239,7 @@ class Game: # Create a namespace for our game
         action_name = menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
-            options = {k: v.name for k, v in options.items()} | {retreat: "retreat"}
+            options = {k: v.name for k, v in options.items()} | {retreat: "Retreat"}
         ).lower().strip()
 
         draw_main_title()
@@ -251,7 +250,7 @@ class Game: # Create a namespace for our game
             Game.log = "You retreated... You lost some items..."
             for weapon in Game.weapons[:]:
                 if len(Game.weapons) == 1: break
-                if rng.random() < 0.5:
+                if rng.random() < 0.25:
                     Game.weapons.remove(weapon)
             Game.reset()
             return
@@ -262,8 +261,8 @@ class Game: # Create a namespace for our game
             Game.active = False
             return
 
-        player_drift = 1.15 - rng.random() * 0.30 + (1.5 if Game.difficulty == 0 else -0.5 if Game.difficulty == 2 else 0.0)
-        enemy_drift = 1.15 - rng.random() * 0.30 + (-0.5 if Game.difficulty == 0 else 1.5 if Game.difficulty == 2 else 0.0)
+        player_drift = 1.35 - rng.random() * 0.30 + (1.5 if Game.difficulty == 0 else -0.5 if Game.difficulty == 2 else 0.0)
+        enemy_drift = 1.35 - rng.random() * 0.30 + (-0.5 if Game.difficulty == 0 else 1.5 if Game.difficulty == 2 else 0.0)
         player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift)
         enemy_damage = Game.enemy.damage_now(enemy_drift)
         Game.scenery *= action.scenery
@@ -277,9 +276,17 @@ class Game: # Create a namespace for our game
                             .replace("enemy_damage", str(enemy_damage))\
                             .replace("enemy_weapon", Game.enemy.weapon.name)}"
 
-        if Game.health <= 0:
+        player_dead = Game.health <= 0
+        enemy_dead = Game.enemy.health <= 0
+
+        if all((player_dead, enemy_dead)):
+            if rng.random() < (0.75 if Game.difficulty == 0 else 0.25):
+                Game.win()
+            else:
+                Game.loss()
+        elif player_dead:
             Game.loss()
-        elif Game.enemy.health <= 0:
+        elif enemy_dead:
             Game.win()
 
         time.sleep(max(rng.random() * 1, 0.5))
