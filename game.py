@@ -266,7 +266,7 @@ class Game: # Create a namespace for our game
             Game.log = "You retreated... You lost some items..."
             for weapon in Game.weapons[:]:
                 if len(Game.weapons) == 1: break
-                if rng.random() < 0.25:
+                if rng.random() < (0.75 if Game.difficulty == 0 else 0.25):
                     Game.weapons.remove(weapon)
             Game.reset()
             return
@@ -283,8 +283,8 @@ class Game: # Create a namespace for our game
 
         player_drift = 1.35 - rng.random() * 0.30 + (1.5 if Game.difficulty == 0 else -0.5 if Game.difficulty == 2 else 0.0)
         enemy_drift = 1.35 - rng.random() * 0.30 + (-0.5 if Game.difficulty == 0 else 1.5 if Game.difficulty == 2 else 0.0)
-        player_damage = action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift)
-        enemy_damage = Game.enemy.damage_now(enemy_drift)
+        player_damage = int(action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift) * (1.15 if Game.difficulty == 0 else 0.75 if Game.difficulty == 2 else 1.0))
+        enemy_damage = int(Game.enemy.damage_now(enemy_drift) * (0.75 if Game.difficulty == 0 else 1.15 if Game.difficulty == 2 else 1.0))
         Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
