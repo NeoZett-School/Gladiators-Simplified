@@ -378,7 +378,7 @@ while not Language.get(lang):
     for lang in Language.iterate():
         print(lang.value.name)
     print()
-    lang = input("Select one language: ")
+    lang = input("Select one language (f.e 'sv'): ")
 transcriber = Transcriber(Language.get(lang))
 draw_main_title = lambda: draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(0) + Style.RESET_ALL)
 
