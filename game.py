@@ -382,9 +382,10 @@ class Game: # Create a namespace for our game
             print(transcriber.get_index(27) + transcriber.get_index(28))
         else:
             print(transcriber.get_index(27) + transcriber.get_index(29))
-            Game.weapons = [
-                get_weapon()
-            ]
+            if not Game.difficulty == 3:
+                Game.weapons = [
+                    get_weapon()
+                ]
 
         Game.log = f"| Log\n{transcriber.get_index(30)}{transcriber.get_index(31) if second_chance else ""}"
 
