@@ -283,8 +283,8 @@ class Game: # Create a namespace for our game
 
         player_drift = 1.35 - rng.random() * 0.30 + (0.25 if Game.difficulty == 0 else -0.25 if Game.difficulty == 2 else 0.0)
         enemy_drift = 1.35 - rng.random() * 0.30 + (-0.25 if Game.difficulty == 0 else 0.25 if Game.difficulty == 2 else 0.0)
-        player_damage = int(action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift) * (1.1 if Game.difficulty == 0 else 0.9 if Game.difficulty == 2 else 1.0))
-        enemy_damage = int(Game.enemy.damage_now(enemy_drift) * (0.9 if Game.difficulty == 0 else 1.1 if Game.difficulty == 2 else 1.0))
+        player_damage = int(action.damage_now(Game.enemy.state.value.other_attack_chance * player_drift) * (1.15 if Game.difficulty == 0 else 0.85 if Game.difficulty == 2 else 1.0))
+        enemy_damage = int(Game.enemy.damage_now(enemy_drift) * (0.85 if Game.difficulty == 0 else 1.15 if Game.difficulty == 2 else 1.0))
         Game.scenery *= action.scenery
 
         Game.health = Game.health - enemy_damage
