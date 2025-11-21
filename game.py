@@ -5,7 +5,7 @@ from translator import Transcriber, Language
 from playsound3.playsound3 import Sound
 from playsound3 import playsound
 from enum import Enum
-from items import Item, get_weapon
+from items import Item, WEAPONS, get_weapon
 from enemies import Enemy, EnemyState
 from achievements import Achievement, ACHIEVEMENTS
 import constants
@@ -439,10 +439,14 @@ while not Game.player_name:
     Game.player_name = input(transcriber.get_index(3)) # Select a name
 
 difficulty = ""
-while not difficulty in ("0", "1", "2"):
+while not difficulty in ("0", "1", "2", "3"):
     draw_main_title()
     difficulty = input(transcriber.get_index(15))
 Game.difficulty = int(difficulty)
+
+if difficulty == "3":
+    Game.weapons.clear()
+    Game.weapons = WEAPONS.copy()
 
 draw_main_title()
 
