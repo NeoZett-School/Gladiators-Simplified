@@ -122,20 +122,20 @@ class Game: # Create a namespace for our game
 
     currency: int = 0
 
-    player_damage_cache: int = 0.0 # Smart auto balancing!
-    enemy_damage_cache: int = 0.0
+    player_damage_cache: float = 0.0 # Smart auto balancing!
+    enemy_damage_cache: float = 0.0
 
     total_rounds: int = 0
     loses: int = 0
     wins: int = 0
 
     has_first_game_achievement: bool = False
-    has_trident_achivement: bool = False
-    has_win_achivement: bool = False
+    has_trident_achievement: bool = False
+    has_win_achievement: bool = False
     has_inventory_achievement: bool = False
-    has_round_ten_achivement: bool = False
-    has_lose_five_achivement: bool = False
-    has_win_five_achivement: bool = False
+    has_round_ten_achievement: bool = False
+    has_lose_five_achievement: bool = False
+    has_win_five_achievement: bool = False
 
     scenery: float = 100.0 # You begin with hundred scenery points.
 
@@ -245,9 +245,9 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["First Game"])
             Game.has_first_game_achievement = True
         
-        if not Game.has_round_ten_achivement:
+        if not Game.has_round_ten_achievement:
             Game.achievements.append(ACHIEVEMENTS["Round Ten"])
-            Game.has_round_ten_achivement = True
+            Game.has_round_ten_achievement = True
         
         if not Game.has_inventory_achievement and len(Game.weapons) >= 5:
             Game.achievements.append(ACHIEVEMENTS["Inventory At Large"])
@@ -291,9 +291,9 @@ class Game: # Create a namespace for our game
             Game.active = False
             return
         
-        if action.name == "Trident" and not Game.has_trident_achivement:
+        if action.name == "Trident" and not Game.has_trident_achievement:
             Game.achievements.append(ACHIEVEMENTS["The Power Of The Trident"])
-            Game.has_trident_achivement = True
+            Game.has_trident_achievement = True
 
         # helper
         def clamp(x, lo, hi):
@@ -375,9 +375,9 @@ class Game: # Create a namespace for our game
     
     def loss() -> None:
         Game.loses += 1
-        if not Game.has_lose_five_achivement and Game.loses >= 5:
+        if not Game.has_lose_five_achievement and Game.loses >= 5:
             Game.achievements.append(ACHIEVEMENTS["Lose Five"])
-            Game.has_lose_five_achivement = True
+            Game.has_lose_five_achievement = True
 
         time.sleep(0.25)
         draw_main_title()
@@ -407,13 +407,13 @@ class Game: # Create a namespace for our game
     def win() -> None:
         Game.wins += 1
 
-        if not Game.has_win_achivement:
+        if not Game.has_win_achievement:
             Game.achievements.append(ACHIEVEMENTS["First Win"])
-            Game.has_win_achivement = True
+            Game.has_win_achievement = True
         
-        if not Game.has_win_five_achivement and Game.wins >= 5:
+        if not Game.has_win_five_achievement and Game.wins >= 5:
             Game.achievements.append(ACHIEVEMENTS["Win Five"])
-            Game.has_win_five_achivement = True
+            Game.has_win_five_achievement = True
         
         weight = WEAPON_RARITY[WEAPONS.index(Game.enemy.weapon)]
         total = sum(WEAPON_RARITY) or 1
@@ -469,12 +469,12 @@ if difficulty == "3":
     Game.weapons = WEAPONS.copy()
 
     Game.has_first_game_achievement = True
-    Game.has_trident_achivement = True
-    Game.has_win_achivement = True
+    Game.has_trident_achievement = True
+    Game.has_win_achievement = True
     Game.has_inventory_achievement = True
-    Game.has_round_ten_achivement = True
-    Game.has_lose_five_achivement = True
-    Game.has_win_five_achivement = True
+    Game.has_round_ten_achievement = True
+    Game.has_lose_five_achievement = True
+    Game.has_win_five_achievement = True
     Game.achievements = list(ACHIEVEMENTS.values())
 
 draw_main_title()
