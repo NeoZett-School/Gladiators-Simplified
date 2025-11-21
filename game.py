@@ -122,6 +122,8 @@ class Game: # Create a namespace for our game
 
     has_first_game_achievement: bool = False
     has_trident_achivement: bool = False
+    has_win_achivement: bool = False
+    has_inventory_achievement: bool = False
 
     scenery: float = 100.0 # You begin with hundred scenery points.
 
@@ -223,6 +225,10 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["First Game"])
             Game.has_first_game_achievement = True
         
+        if not Game.has_inventory_achievement and len(Game.weapons) >= 5:
+            Game.achievements.append(ACHIEVEMENTS["Inventory At Large"])
+            Game.has_inventory_achievement = True
+        
         if not Game.enemy:
             Game.enemy = Enemy()
             Game.enemy.health = 25
@@ -256,6 +262,10 @@ class Game: # Create a namespace for our game
             return
 
         action = options.get(action_name)
+
+        if action.name == "Trident" and not Game.has_trident_achivement:
+            Game.achievements.append(Achievement["The Power Of The Trident"])
+            Game.has_trident_achivement = True
 
         if not action:
             Game.active = False
@@ -319,6 +329,10 @@ class Game: # Create a namespace for our game
         Game.reset()
     
     def win() -> None:
+        if not Game.has_win_achivement:
+            Game.achievements.append(ACHIEVEMENTS["First Win"])
+            Game.has_win_achivement = True
+
         Game.log = "| Log\n" + transcriber.get_index(32)
         if not Game.enemy.weapon in Game.weapons:
             Game.weapons.append(Game.enemy.weapon)
