@@ -33,7 +33,7 @@ WEAPONS = [
     Item("Throwing Axe", 6, 0.7, 0.85, 0, 0, "common"),         # common
     Item("Halberd", 10, 0.6, 0.55, 0, 0, "rare"),               # rare
     Item("Whip", 3, 0.9, 1.0, 0, 0, "common"),                  # common
-    Item("Escalibur", 20, 0.1, 0.95, 0, 0, "legendary"),        # legendary
+    Item("Escalibur", 20, 0.1, 0.45, 0, 0, "legendary"),        # legendary
     Item("Reavers Pike", 15, 0.6, 0.95, 5, 3, "legendary"),     # legendary/overpowered
     Item("Gods Finger", 100, 1.0, 1.0, 0, 0, "experimental"),   # experimental/unobtainable/overpowered
     Item("Air", 0.0, 0.0, 0.0, 0, 0, "experimental")            # experimental/unobtainable/overpowered
