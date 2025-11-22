@@ -18,5 +18,9 @@ ACHIEVEMENTS = {
     "Inventory At Large": Achievement("Inventory At Large", "Have at least five weapons in your grasp! \nAll gathered from previous encounters."),
     "Round Ten": Achievement("Round Ten", "Play ten rounds."),
     "Lose Five": Achievement("Lose Five", "Lose five times."),
-    "Win Five": Achievement("Win Five", "Win five times.")
+    "Win Five": Achievement("Win Five", "Win five times."),
+    "Sell": Achievement("Seller", "Sell one item."),
+    "Buy": Achievement("Buyer", "Buy one item."),
+    "Reavers Pike": Achievement("Reavers Pike", "Get the reavers pike for the first time!\nThe end must be close!"),
+    "Axe": Achievement("Axe", "The axe is one of the first weapons you will find.")
 }

@@ -48,7 +48,7 @@ INFO_TEXT = [
     "There is a secret game mode, only the developers know of.",
     "The escalibur is very powerful, deals 20 damage, but is very unlikely to hit.",
     "The reavers pike is half as common as the escalibur.",
-    "The axe has a 95%% chance to hit.",
+    "The axe has a 95% chance to hit.",
     "You can always retreat if you play on easy mode.",
     "The costs and earnings after every battle is carefully calculated based on how powerful the item is.",
     "Even if you lose, you are lucky to get 5 loses, which gives you an award!",
@@ -57,7 +57,10 @@ INFO_TEXT = [
     "This game was a school porject.",
     "Hard is very difficult indeed...",
     "The creator is from Sweden.",
-    "Buy an item for ten times of what it gives you after winning a battle."
+    "Buy an item for ten times of what it gives you after winning a battle.",
+    "Higher rarity doesn't neccessarily mean it is better!",
+    "The AI can be aggressive or protective.",
+    ""
 ]
 
 RANDOM_SEED = None

@@ -39,3 +39,12 @@ Shop
 Trader
 You must have one weapon
 You will receive trade_gives Makaronies for trade_name. Confirm? (y/N)
+You won the game! This means:
+
+That you have played over rounds_needed rounds!
+You have won ten times and lost five times.
+That you have over seven achievements!
+That you have the Reavers Pike.
+You have a total of three or more weapons.
+
+Bravo, brave soldier.

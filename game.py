@@ -140,6 +140,10 @@ class Game: # Create a namespace for our game
     has_round_ten_achievement: bool = False
     has_lose_five_achievement: bool = False
     has_win_five_achievement: bool = False
+    has_sell_achievement: bool = False
+    has_buy_achievement: bool = False
+    has_reavers_pike_achievement: bool = False
+    has_axe_achievement: bool = False
 
     scenery: float = 100.0 # You begin with hundred scenery points.
 
@@ -278,6 +282,10 @@ class Game: # Create a namespace for our game
             if Game.currency >= purchase_cost:
                 Game.weapons.append(purchase_weapon)
                 Game.currency -= purchase_cost
+
+                if not Game.has_buy_achievement:
+                    Game.achievements.append(ACHIEVEMENTS["Buy"])
+                    Game.has_buy_achievement = True
     
     def trader() -> None:
         while True:
@@ -337,6 +345,10 @@ class Game: # Create a namespace for our game
             
             Game.weapons.remove(trade_weapon)
             Game.currency += trade_gives
+
+            if not Game.has_sell_achievement:
+                Game.achievements.append(ACHIEVEMENTS["Sell"])
+                Game.has_sell_achievement = True
     
     def game() -> None: # We'll handle the actual game logic here
         Game.active = True
@@ -374,6 +386,14 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["Inventory At Large"])
             Game.has_inventory_achievement = True
         
+        if not Game.has_reavers_pike_achievement and any(weapon.name == "Reavers Pike" for weapon in Game.weapons):
+            Game.achievements.append(ACHIEVEMENTS["Reavers Pike"])
+            Game.has_reavers_pike_achievement = True
+        
+        if not Game.has_axe_achievement and any(weapon.name == "Axe" for weapon in Game.weapons):
+            Game.achievements.append(ACHIEVEMENTS["Axe"])
+            Game.has_axe_achievement = True
+
         if not Game.enemy:
             Game.enemy = Enemy()
             Game.enemy.health = 25
@@ -571,6 +591,74 @@ class Game: # Create a namespace for our game
         Game.health = 25
         Game.round = 1
 
+        Game.final()
+    
+    def final() -> None:
+        # Big block of conditions
+        # Round condition
+        needed_rounds = (200 if Game.difficulty == 2 else 50 if Game.difficulty == 0 else 100)
+        if not Game.total_rounds >= needed_rounds: return
+        # Win/Loss condition
+        if not Game.wins >= 10: return
+        if not Game.loses >= 5: return
+        # Achievement condition (You must have explored the game a little, easy)
+        if not len(Game.achievements) >= 7: return
+        # Inventory conditions
+        if not any(weapon.name == "Reavers Pike" for weapon in Game.weapons): return
+        if not len(Game.weapons) >= 3: return
+        # Currency condition
+        if not (Game.lifetime_currency > 500 and Game.currency > 2000): return
+
+        # Final screen
+        draw_main_title()
+        print("=== Final Statistics ===")
+        print(f"Player: {Game.player_name}")
+        print(f"Difficulty: {Game.difficulty} (0=Easy, 1=Normal, 2=Hard, 09=Experimental)") # This is the first time we reference the forth game mode. Only now will the player now.
+        print(f"Total rounds: {Game.total_rounds}")
+        print(f"Wins: {Game.wins}  |  Losses: {Game.loses}")
+        print(f"Makaronies (current / lifetime from battle): {Game.currency} / {Game.lifetime_currency}")
+        print(f"Weapons kept: {', '.join(w.name for w in Game.weapons)}")
+        # optional: list achievements
+        print("Achievements unlocked:")
+        for a in Game.achievements:
+            print(" -", a.name if hasattr(a, "name") else getattr(a, "text", str(a)))
+        print()
+        print(transcriber.get_index(41, 50).replace("rounds_needed", str(needed_rounds)))
+        print()
+        print("Press any key to continue.")
+        msvcrt.getch()
+        draw_main_title()
+        print("Thank you for playing! This was a simple school project to begin with, and spiraled into something else.")
+        print()
+        print("This game was developed and created by: Neo Zetterberg")
+        print("And was made at late 2025.")
+        print()
+        print("Press any key to continue.")
+        msvcrt.getch()
+        draw_main_title()
+        win_factor = (Game.wins / Game.loses)
+        difficulty_factor = (Game.difficulty if Game.difficulty > 0 else 0.5)
+        achievements_factor = (len(Game.achievements) / len(ACHIEVEMENTS))
+        currency_factor = Game.currency / Game.lifetime_currency
+        factor = win_factor * difficulty_factor * achievements_factor * currency_factor
+        print(f"Your score for this round was: {min(int((factor/3.0) * 10), 10)}/10")
+        if factor <= 0.5:
+            print("Don't worry. It didn't go very well, but we still believe next time will be even better!")
+        elif factor <= 0.75:
+            print("One more time, and you will do even better!")
+        elif factor <= 1.25:
+            print("Okay, maybe not perfect, but it is really good. Time to up the difficulty!")
+        elif factor <= 1.75:
+            print("We are not sure how you did it, but you are over the normal!")
+        elif factor <= 2.5:
+            print("Incredible, just incredible. Continue that way.")
+        else:
+            print("Perfect.")
+        print()
+        print("Press any key to exit.")
+        msvcrt.getch()
+        sys.exit(0)
+
 # ------ Settings ------
 
 # Loadin...
@@ -596,12 +684,12 @@ while not Game.player_name:
     Game.player_name = input(transcriber.get_index(3)) # Select a name
 
 difficulty = ""
-while not difficulty in ("0", "1", "2", "3"):
+while not difficulty in ("0", "1", "2", "09"):
     draw_main_title()
     difficulty = input(transcriber.get_index(15))
 Game.difficulty = int(difficulty)
 
-if difficulty == "3":
+if difficulty == "09":
     Game.weapons.clear()
     Game.weapons = WEAPONS.copy()
 
@@ -612,6 +700,10 @@ if difficulty == "3":
     Game.has_round_ten_achievement = True
     Game.has_lose_five_achievement = True
     Game.has_win_five_achievement = True
+    Game.has_sell_achievement = True
+    Game.has_buy_achievement = True
+    Game.has_reavers_pike_achievement = True
+    Game.has_axe_achievement = True
     Game.achievements = list(ACHIEVEMENTS.values())
 
 draw_main_title()
