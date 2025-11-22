@@ -204,8 +204,8 @@ class Game: # Create a namespace for our game
                 case "6":
                     sys.exit()
 
-            background_sound = "./sounds/menu.mp3"
-            if Settings.MUSIC.value:
+            if Settings.MUSIC.value and not background_sound == "./sounds/menu.mp3":
+                background_sound = "./sounds/menu.mp3"
                 Game.background_music.stop()
                 Game.background_music = create_background_music()
     
