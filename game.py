@@ -161,10 +161,6 @@ class Game: # Create a namespace for our game
 
     def menu() -> None: # Start rendering the menu
         global background_sound
-        background_sound = "./sounds/menu.mp3"
-        if Settings.MUSIC.value:
-            Game.background_music.stop()
-            Game.background_music = create_background_music()
         while True:
             if not Game.background_music.is_alive() and Settings.MUSIC.value:
                 Game.background_music = create_background_music()
@@ -207,6 +203,11 @@ class Game: # Create a namespace for our game
                     Game.trader()
                 case "6":
                     sys.exit()
+                    
+            background_sound = "./sounds/menu.mp3"
+            if Settings.MUSIC.value:
+                Game.background_music.stop()
+                Game.background_music = create_background_music()
     
     def options() -> None: # Start rendering the options
         while True:
