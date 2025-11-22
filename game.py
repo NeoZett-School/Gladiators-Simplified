@@ -158,7 +158,7 @@ class Game: # Create a namespace for our game
             draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
             print((f"{Fore.RED}HARD{Fore.RESET}" if Game.difficulty == 2 else f"{Fore.BLUE}NORMAL{Fore.RESET}" if Game.difficulty == 1 else f"{Fore.GREEN}EASY{Fore.RESET}" if Game.difficulty == 0 else f"{Fore.MAGENTA}EXPERIMENTAL{Fore.RESET}"))
             print()
-            print(f"{Style.DIM}Makaronies are your unit of comparision.{Style.RESET_ALL}")
+            print(f"{Style.DIM}Makaronies are your unit of comparison.{Style.RESET_ALL}")
             print(f"{Game.currency} Makaronies earned")
             print(f"{Game.total_rounds} Total rounds")
             print(f"{Game.wins} Wins")
