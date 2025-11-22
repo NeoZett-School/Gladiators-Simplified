@@ -686,7 +686,8 @@ class Game: # Create a namespace for our game
         achievements_factor = len(Game.achievements) / max(1, len(ACHIEVEMENTS))
 
         lifetime = float(max(1, Game.lifetime_currency))
-        currency_factor = Game.currency / lifetime
+        currency_factor = (Game.currency + lifetime) / 500 
+        # Lifetime is general performance, and current is just your savings, making how you end with what very important.
 
         # combine and normalize into 0..10 scale
         raw = win_factor * difficulty_factor * achievements_factor * currency_factor
