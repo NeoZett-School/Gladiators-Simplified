@@ -248,7 +248,7 @@ class Game: # Create a namespace for our game
             Game.achievements.append(ACHIEVEMENTS["First Game"])
             Game.has_first_game_achievement = True
         
-        if not Game.has_round_ten_achievement:
+        if not Game.has_round_ten_achievement and Game.round >= 10:
             Game.achievements.append(ACHIEVEMENTS["Round Ten"])
             Game.has_round_ten_achievement = True
         
