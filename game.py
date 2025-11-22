@@ -121,6 +121,7 @@ class Game: # Create a namespace for our game
     round: int = 1
 
     currency: int = 0
+    total_currency: int = 0
 
     player_damage_cache: float = 0.0 # Smart auto balancing!
     enemy_damage_cache: float = 0.0
@@ -159,7 +160,7 @@ class Game: # Create a namespace for our game
             print((f"{Fore.RED}HARD{Fore.RESET}" if Game.difficulty == 2 else f"{Fore.BLUE}NORMAL{Fore.RESET}" if Game.difficulty == 1 else f"{Fore.GREEN}EASY{Fore.RESET}" if Game.difficulty == 0 else f"{Fore.MAGENTA}EXPERIMENTAL{Fore.RESET}"))
             print()
             print(f"{Style.DIM}Makaronies are your unit of comparison.{Style.RESET_ALL}")
-            print(f"{Game.currency} Makaronies earned")
+            print(f"{Game.total_currency} Makaronies")
             print(f"{Game.total_rounds} Total rounds")
             print(f"{Game.wins} Wins")
             print(f"{Game.loses} Loses")
@@ -171,7 +172,8 @@ class Game: # Create a namespace for our game
                     "1": transcriber.get_index(7),
                     "2": transcriber.get_index(8),
                     "3": transcriber.get_index(33),
-                    "4": transcriber.get_index(9)
+                    "4": transcriber.get_index(37),
+                    "5": transcriber.get_index(9)
                 }
             ).lower().strip()
             match directory: # do something depending on the input
@@ -182,6 +184,8 @@ class Game: # Create a namespace for our game
                 case "3":
                     Game.stats()
                 case "4":
+                    Game.shop()
+                case "5":
                     sys.exit()
     
     def options() -> None: # Start rendering the options
@@ -221,6 +225,45 @@ class Game: # Create a namespace for our game
         print()
         print(transcriber.get_index(35))
         msvcrt.getch()
+    
+    def shop() -> None:
+        while True:
+            draw_main_title()
+            print(f"{Game.currency} Makaronies")
+            print()
+            costs = {}
+            weapons = {}
+            menu_options = {}
+            for i, weapon in enumerate(WEAPONS):
+                ident = str(i+1)
+                rarity = WEAPON_RARITY[i]
+                total = sum(WEAPON_RARITY) or 1
+                prob = rarity / total
+                rarity_multiplier = 1.0 - prob  # in [0,1]
+                rarity_reward = constants.RARITY_REWARD[weapon.rarity]
+                blood_spill = ((weapon.damage + weapon.blood * weapon.blood_ticks) / 2)
+                reward = int(rarity_multiplier * blood_spill * weapon.damage_chance * weapon.scenery * 100) + rarity_reward
+                cost = reward * 45 # You require 45 times the award to buy the actual item
+                if rarity > 0.0: 
+                    costs[ident] = cost
+                    weapons[ident] = weapon
+                    menu_options[ident] = f"{constants.RARITY_COLOR[weapon.rarity]}{weapon.name}{Style.RESET_ALL} - {Style.BRIGHT + (Fore.GREEN if Game.currency >= cost else Fore.RED)}{cost} Makaronies{Style.RESET_ALL}"
+                    
+            purchase_name = menu(
+                title = transcriber.get_index(37),
+                prompt = transcriber.get_index(17),
+                options = menu_options
+            )
+            
+            purchase_weapon = weapons.get(purchase_name)
+            purchase_cost = costs.get(purchase_name)
+            
+            if not purchase_weapon:
+                return
+            
+            if Game.currency >= purchase_cost:
+                Game.weapons.append(purchase_weapon)
+                Game.currency -= purchase_cost
     
     def game() -> None: # We'll handle the actual game logic here
         Game.active = True
@@ -269,18 +312,10 @@ class Game: # Create a namespace for our game
 
         retreat = str(len(options) + 1)
 
-        rarites = {
-            "common": Fore.GREEN,
-            "uncommon": Fore.CYAN,
-            "rare": Fore.MAGENTA,
-            "legendary": Fore.RED,
-            "experimental": Fore.YELLOW
-        }
-
         action_name = menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
-            options = {k: f"{rarites[v.rarity]}{v.name}{Style.RESET_ALL}" for k, v in options.items()} | ({retreat: "Retreat"} if Game.enemy.health < 8 or Game.difficulty == 0 else {})
+            options = {k: f"{constants.RARITY_COLOR[v.rarity]}{v.name}{Style.RESET_ALL}" for k, v in options.items()} | ({retreat: "Retreat"} if Game.enemy.health < 8 or Game.difficulty == 0 else {})
         ).lower().strip()
 
         draw_main_title()
@@ -442,8 +477,12 @@ class Game: # Create a namespace for our game
         total = sum(WEAPON_RARITY) or 1
         prob = weight / total
         rarity_multiplier = 1.0 - prob  # in [0,1]
-        reward = int(rarity_multiplier * ((Game.enemy.weapon.damage + Game.enemy.weapon.blood * Game.enemy.weapon.blood_ticks) / 2) * Game.enemy.weapon.damage_chance * 100)
-        Game.currency += max(0, reward)
+        rarity_reward = constants.RARITY_REWARD[Game.enemy.weapon.rarity]
+        blood_spill = ((Game.enemy.weapon.damage + Game.enemy.weapon.blood * Game.enemy.weapon.blood_ticks) / 2)
+        reward = int(rarity_multiplier * blood_spill * Game.enemy.weapon.damage_chance * Game.enemy.weapon.scenery * 100) + rarity_reward
+        reward = max(0, reward)
+        Game.currency += reward
+        Game.total_currency += reward
 
         Game.log = "| Log\n" + transcriber.get_index(32)
         if not Game.enemy.weapon in Game.weapons:
