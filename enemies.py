@@ -46,7 +46,7 @@ class Enemy:
     def apply_blood(self, action: Item, relevant_damage: int) -> None:
         if self.blood > 0:
             self.health = self.health - self.blood
-            self.blood_ticks -= 1
+            self.blood_ticks = self.blood_ticks - 1
             if self.blood_ticks <= 0:
                 self.blood = 0
                 self.blood_ticks = 0
