@@ -328,7 +328,7 @@ class Game: # Create a namespace for our game
             
             # confirm
             draw_main_title()
-            print(transcriber.get_index(40).replace("trade_gives", trade_gives).replace("trade_name", trade_weapon.name))
+            print(transcriber.get_index(40).replace("trade_gives", str(trade_gives)).replace("trade_name", trade_weapon.name))
             resp = input("> ").strip().lower()
             if resp not in ("y", "yes"):
                 continue  # return to trader menu
