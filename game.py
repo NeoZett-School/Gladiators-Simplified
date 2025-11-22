@@ -350,8 +350,8 @@ class Game: # Create a namespace for our game
                 .replace("game_round", str(Game.round))\
                 .replace("player_health", str(Game.health))\
                 .replace("enemy_health", str(Game.enemy.health)\
-                .replace("player_blood", Game.blood)\
-                .replace("enemy_blood", Game.enemy.blood))
+                .replace("player_blood", str(Game.blood))\
+                .replace("enemy_blood", str(Game.enemy.blood)))
         )
         print()
 
