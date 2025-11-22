@@ -152,6 +152,8 @@ class Game: # Create a namespace for our game
 
     log: str = None
 
+    _final_shown: bool = False
+
     def toggle_music() -> None:
         if Game.background_music:
             Game.background_music.stop()
@@ -522,21 +524,25 @@ class Game: # Create a namespace for our game
         Game.enemy_damage_cache  = Game.enemy_damage_cache * 0.8 + enemy_damage * 0.2
         Game.scenery *= action.scenery
 
-        if Game.blood > 0:
-            Game.blood_ticks -= 1
-            if Game.blood_ticks <= 0:
-                Game.blood = 0
-                Game.blood_ticks = 0
-            Game.health = Game.health - Game.blood
-
         Game.health = Game.health - enemy_damage
         Game.enemy.health = Game.enemy.health - player_damage
 
         Game.enemy.apply_blood(action, player_damage) # Does the exact same thing, but for the enemy
 
+        if Game.blood > 0:
+            Game.blood_ticks = Game.blood_ticks - 1
+            if Game.blood_ticks <= 0:
+                Game.blood = 0
+                Game.blood_ticks = 0
+            Game.health = Game.health - Game.blood
+
         if enemy_damage > 0:
-            Game.blood = min(Game.blood + Game.enemy.weapon.blood, 5)
-            Game.blood_ticks = min(Game.blood_ticks + Game.enemy.weapon.blood_ticks, 3)
+            new_b = getattr(Game.enemy.weapon, "blood", 0)
+            new_ticks = getattr(Game.enemy.weapon, "blood_ticks", 0)
+            if new_b > 0 and new_ticks > 0:
+                # add but cap
+                Game.blood = min(Game.blood + new_b, 5)
+                Game.blood_ticks = min(Game.blood_ticks + new_ticks, 3)
 
         Game.log = f"| Log\n{transcriber.get_index(19, 21)\
                             .replace("player_damage", str(player_damage))\
@@ -631,79 +637,118 @@ class Game: # Create a namespace for our game
         Game.final()
     
     def final() -> None:
-        # Big block of conditions
-        # Round condition
-        needed_rounds = (200 if Game.difficulty == 2 else 50 if Game.difficulty == 0 else 100)
-        if not Game.total_rounds >= needed_rounds: return
-        # Win/Loss condition
-        if not Game.wins >= 10: return
-        if not Game.loses >= 5: return
-        # Achievement condition (You must have explored the game a little, easy)
-        if not len(Game.achievements) >= 7: return
-        # Inventory conditions
-        if not any(weapon.name == "Reavers Pike" for weapon in Game.weapons): return
-        if not len(Game.weapons) >= 3: return
-        # Currency condition
-        if not (Game.lifetime_currency > 500 and Game.currency > 2000): return
+        # only show once per session
+        if getattr(Game, "_final_shown", False):
+            return
 
-        # Final screen
+        # conditions
+        needed_rounds = 200 if Game.difficulty == 2 else 50 if Game.difficulty == 0 else 100
+        wins_req = 10
+        loses_req = 5
+        ach_req = 7
+        min_weapons = 3
+        lifetime_req = 500
+        currency_req = 2000
+
+        # if near-miss, optionally show progress (but don't exit)
+        near_rounds = Game.total_rounds >= int(0.75 * needed_rounds)
+        near_wins = Game.wins >= int(0.75 * wins_req)
+        near_ach = len(Game.achievements) >= int(0.75 * ach_req)
+
+        # pre-checks
+        if not (Game.total_rounds >= needed_rounds and
+                Game.wins >= wins_req and
+                Game.loses >= loses_req and
+                len(Game.achievements) >= ach_req and
+                any(weapon.name == "Reavers Pike" for weapon in Game.weapons) and
+                len(Game.weapons) >= min_weapons and
+                Game.lifetime_currency > lifetime_req and
+                Game.currency > currency_req):
+            # optional: show progress if player is close
+            if near_rounds and near_wins and near_ach:
+                draw_main_title()
+                print("You're close to the final! Progress:")
+                print(f"Rounds: {Game.total_rounds}/{needed_rounds}")
+                print(f"Wins: {Game.wins}/{wins_req}  |  Losses: {Game.loses}/{loses_req}")
+                print(f"Achievements: {len(Game.achievements)}/{ach_req}")
+                print(f"Currency (current / lifetime): {Game.currency} / {Game.lifetime_currency}")
+                print()
+                print("Keep going — the final is close!")
+                time.sleep(1.5)
+            return
+
+        # mark as shown to avoid repeats
+        Game._final_shown = True
+
+        # compute safe scoring factors (guard divisions)
+        wins = float(Game.wins)
+        loses = float(max(1, Game.loses))  # avoid div by zero
+        win_factor = wins / loses
+
+        difficulty_factor = Game.difficulty if Game.difficulty > 0 else 0.5
+
+        achievements_factor = len(Game.achievements) / max(1, len(ACHIEVEMENTS))
+
+        lifetime = float(max(1, Game.lifetime_currency))
+        currency_factor = Game.currency / lifetime
+
+        # combine and normalize into 0..10 scale
+        raw = win_factor * difficulty_factor * achievements_factor * currency_factor
+        # heuristic normalization: divide by an empirical scale (tune as needed)
+        score = max(0.0, min(10.0, (raw / 3.0) * 10.0))
+        score_int = int(round(score))
+
+        # final screens
         draw_main_title()
         print("=== Final Statistics ===")
         print(f"Player: {Game.player_name}")
-        print(f"Difficulty: {Game.difficulty} (0=Easy, 1=Normal, 2=Hard, 3=Experimental)") # This is the first time we reference the forth game mode. Only now will the player now.
+        print(f"Mode: {('Experimental' if Game.difficulty >= 9 else ('Easy' if Game.difficulty==0 else 'Normal' if Game.difficulty==1 else 'Hard' if Game.difficulty==2 else f'Difficulty {Game.difficulty}'))})")
         print(f"Total rounds: {Game.total_rounds}")
         print(f"Wins: {Game.wins}  |  Losses: {Game.loses}")
-        print(f"Makaronies (current / lifetime from battle): {Game.currency} / {Game.lifetime_currency}")
+        print(f"Makaronies (current / lifetime): {Game.currency} / {Game.lifetime_currency}")
         print(f"Weapons kept: {', '.join(w.name for w in Game.weapons)}")
-        # optional: list achievements
         print("Achievements unlocked:")
         for a in Game.achievements:
-            print(" -", a.name if hasattr(a, "name") else getattr(a, "text", str(a)))
+            print(" -", getattr(a, "name", getattr(a, "text", str(a))))
         print()
         print(transcriber.get_index(41, 50).replace("rounds_needed", str(needed_rounds)))
         print()
         print("Press any key to continue.")
-        msvcrt.getch()
+        try:
+            msvcrt.getch()
+        except Exception:
+            input()
+
         draw_main_title()
-        print("Thank you for playing! This was a simple school project to begin with, and spiraled into something else.")
+        print("Thank you for playing! This started as a small school project and became something bigger.")
         print()
-        print("This game was developed and created by: Neo Zetterberg")
-        print("And was made at late 2025.")
+        print("Developer: Neo Zetterberg — late 2025")
         print()
-        print("Press any key to continue.")
-        msvcrt.getch()
+        print("Press any key for your final score.")
+        try:
+            msvcrt.getch()
+        except Exception:
+            input()
+
         draw_main_title()
-        win_factor = (Game.wins / Game.loses)
-        difficulty_factor = (Game.difficulty if Game.difficulty > 0 else 0.5)
-        achievements_factor = (len(Game.achievements) / len(ACHIEVEMENTS))
-        currency_factor = Game.currency / Game.lifetime_currency
-        factor = win_factor * difficulty_factor * achievements_factor * currency_factor
-        print(f"Your score for this round was: {min(int((factor/3.0) * 10), 10)}/10")
-        if factor <= 0.5:
-            print("Don't worry. It didn't go very well, but we still believe next time will be even better!")
-        elif factor <= 0.75:
-            print("One more time, and you will do even better!")
-        elif factor <= 1.25:
-            print("Okay, maybe not perfect, but it is really good. Time to up the difficulty!")
-        elif factor <= 1.75:
-            print("We are not sure how you did it, but you are over the normal!")
-        elif factor <= 2.5:
-            print("Incredible, just incredible. Continue that way.")
+        print(f"Your score for this run: {score_int}/10")
+        if score_int <= 3:
+            print("Don't worry — it'll be better next time!")
+        elif score_int <= 5:
+            print("Good effort — a few small changes and you'll improve!")
+        elif score_int <= 7:
+            print("Solid run! Consider bumping difficulty to test yourself.")
+        elif score_int <= 9:
+            print("Excellent play — very impressive.")
         else:
-            print("Perfect.")
+            print("Perfect. Legendary run.")
+
         print()
         print("Press any key to exit.")
-        msvcrt.getch()
-        draw_main_title()
-        print(transcriber.get_index(50), end="\r")
-        time.sleep(2.0)
-        print(transcriber.get_index(50) + transcriber.get_index(51))
-        print()
-        for i in range(5):
-            print(f"Leaving in {5-i} seconds...", end="\r")
-            time.sleep(1.0)
-        print(" "*23, end="\r")
-        print("Leaving...")
+        try:
+            msvcrt.getch()
+        except Exception:
+            input()
         sys.exit(0)
 
 # ------ Settings ------
