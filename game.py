@@ -41,8 +41,9 @@ def prompt_menu(title: str, prompt: str, options: Dict[str, str]):
     return input(prompt)
 
 # We'll create a method to run a new background sound
+background_sound = "./sounds/background.mp3"
 def create_background_music() -> Sound:
-    return playsound("./sounds/background.mp3", False)
+    return playsound(background_sound, False)
 
 rng = random.Random(constants.RANDOM_SEED) # We literally use this everywhere, and it is a constant.
 
@@ -159,7 +160,14 @@ class Game: # Create a namespace for our game
             Game.background_music = create_background_music()
 
     def menu() -> None: # Start rendering the menu
+        global background_sound
+        background_sound = "./sounds/background.mp3"
+        if Settings.MUSIC.value:
+            Game.background_music = create_background_music()
         while True:
+            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+                Game.background_music = create_background_music()
+            
             draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
             print((f"{Fore.RED}HARD{Fore.RESET}" if Game.difficulty == 2 else f"{Fore.BLUE}NORMAL{Fore.RESET}" if Game.difficulty == 1 else f"{Fore.GREEN}EASY{Fore.RESET}" if Game.difficulty == 0 else f"{Fore.MAGENTA}EXPERIMENTAL{Fore.RESET}"))
             print()
@@ -238,7 +246,14 @@ class Game: # Create a namespace for our game
         msvcrt.getch()
     
     def shop() -> None:
+        global background_sound
+        background_sound = "./sounds/shop.mp3"
+        if Settings.MUSIC.value:
+            Game.background_music = create_background_music()
         while True:
+            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+                Game.background_music = create_background_music()
+
             draw_main_title()
             print(f"{Game.currency} Makaronies")
             print()
@@ -290,7 +305,14 @@ class Game: # Create a namespace for our game
                     Game.has_buy_achievement = True
     
     def trader() -> None:
+        global background_sound
+        background_sound = "./sounds/shop.mp3"
+        if Settings.MUSIC.value:
+            Game.background_music = create_background_music()
         while True:
+            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+                Game.background_music = create_background_music()
+                
             draw_main_title()
             print(f"{Game.currency} Makaronies")
             print()
@@ -353,9 +375,15 @@ class Game: # Create a namespace for our game
                 Game.has_sell_achievement = True
     
     def game() -> None: # We'll handle the actual game logic here
+        global background_sound
         Game.active = True
+        background_sound = "./sounds/fight.mp3"
+        if Settings.MUSIC.value:
+            Game.background_music = create_background_music()
         while Game.active:
             draw_main_title()
+            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+                Game.background_music = create_background_music()
             Game.battle()
     
     def render_game() -> None:
