@@ -530,19 +530,15 @@ class Game: # Create a namespace for our game
         Game.enemy.apply_blood(action, player_damage) # Does the exact same thing, but for the enemy
 
         if Game.blood > 0:
+            Game.health = Game.health - Game.blood
             Game.blood_ticks = Game.blood_ticks - 1
             if Game.blood_ticks <= 0:
                 Game.blood = 0
                 Game.blood_ticks = 0
-            Game.health = Game.health - Game.blood
 
         if enemy_damage > 0:
-            new_b = getattr(Game.enemy.weapon, "blood", 0)
-            new_ticks = getattr(Game.enemy.weapon, "blood_ticks", 0)
-            if new_b > 0 and new_ticks > 0:
-                # add but cap
-                Game.blood = min(Game.blood + new_b, 5)
-                Game.blood_ticks = min(Game.blood_ticks + new_ticks, 3)
+            Game.blood = min(Game.blood + action.blood, 5)
+            Game.blood_ticks = min(Game.blood_ticks + action.blood_ticks, 3)
 
         Game.log = f"| Log\n{transcriber.get_index(19, 21)\
                             .replace("player_damage", str(player_damage))\
