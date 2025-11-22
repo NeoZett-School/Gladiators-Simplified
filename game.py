@@ -349,7 +349,9 @@ class Game: # Create a namespace for our game
                 .replace("enemy_name", Game.enemy.name)\
                 .replace("game_round", str(Game.round))\
                 .replace("player_health", str(Game.health))\
-                .replace("enemy_health", str(Game.enemy.health))
+                .replace("enemy_health", str(Game.enemy.health)\
+                .replace("player_blood", Game.blood)\
+                .replace("enemy_blood", Game.enemy.blood))
         )
         print()
 
@@ -523,9 +525,10 @@ class Game: # Create a namespace for our game
         else:
             print(transcriber.get_index(27) + transcriber.get_index(29))
             if not Game.difficulty == 3:
-                Game.weapons = [
-                    get_weapon()
-                ]
+                for weapon in Game.weapons[:]:
+                    if not weapon.name == "Reavers Pike":
+                        Game.weapons.remove(weapon)
+                Game.weapons.append(get_weapon())
 
         Game.log = f"| Log\n{transcriber.get_index(30)}{transcriber.get_index(31) if second_chance else ""}"
 
