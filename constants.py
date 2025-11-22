@@ -59,8 +59,7 @@ INFO_TEXT = [
     "The creator is from Sweden.",
     "Buy an item for ten times of what it gives you after winning a battle.",
     "Higher rarity doesn't neccessarily mean it is better!",
-    "The AI can be aggressive or protective.",
-    ""
+    "The AI can be aggressive or protective."
 ]
 
 RANDOM_SEED = None
