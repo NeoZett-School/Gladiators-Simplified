@@ -146,7 +146,7 @@ class Game: # Create a namespace for our game
     has_reavers_pike_achievement: bool = False
     has_axe_achievement: bool = False
 
-    scenery: float = 100.0 # You begin with hundred scenery points.
+    scenery: float = 500.0 # You begin with hundred scenery points.
 
     achievements: List[Achievement] = []
 
