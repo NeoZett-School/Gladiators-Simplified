@@ -34,10 +34,25 @@ class Enemy:
     health: int = field(init=False)
     weapon: Item = field(init=False)
     state: EnemyState = field(init=False)
+    blood: int = 0
+    blood_ticks: int = 0
 
     def __post_init__(self) -> None:
         self.name = rng.choice(NAMES)
         self.weapon = get_weapon()
+    
+    def apply_blood(self, action: Item, relevant_damage: int) -> None:
+        if self.blood:
+            self.blood_ticks -= 1
+            if self.blood_ticks <= 0:
+                self.blood = 0
+                self.blood_ticks = 0
+
+        self.health -= self.blood
+
+        if relevant_damage > 0:
+            self.blood += action.blood
+            self.blood_ticks += action.blood_ticks
     
     def damage_now(self, variable_chance: float = 1.0) -> int:
         self.state = rng.choices((self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE), STATE_CHANGE)[0]

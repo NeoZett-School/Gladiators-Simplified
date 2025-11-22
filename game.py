@@ -121,7 +121,7 @@ class Game: # Create a namespace for our game
     round: int = 1
 
     currency: int = 0
-    total_currency: int = 0
+    lifetime_currency: int = 0
 
     player_damage_cache: float = 0.0 # Smart auto balancing!
     enemy_damage_cache: float = 0.0
@@ -160,7 +160,7 @@ class Game: # Create a namespace for our game
             print((f"{Fore.RED}HARD{Fore.RESET}" if Game.difficulty == 2 else f"{Fore.BLUE}NORMAL{Fore.RESET}" if Game.difficulty == 1 else f"{Fore.GREEN}EASY{Fore.RESET}" if Game.difficulty == 0 else f"{Fore.MAGENTA}EXPERIMENTAL{Fore.RESET}"))
             print()
             print(f"{Style.DIM}Makaronies are your unit of comparison.{Style.RESET_ALL}")
-            print(f"{Game.total_currency} Makaronies")
+            print(f"{Game.lifetime_currency} Makaronies earned in total")
             print(f"{Game.total_rounds} Total rounds")
             print(f"{Game.wins} Wins")
             print(f"{Game.loses} Loses")
@@ -397,15 +397,14 @@ class Game: # Create a namespace for our game
             if Game.blood_ticks <= 0:
                 Game.blood = 0
                 Game.blood_ticks = 0
-        
-        blood_damage = Game.blood if rng.random() < action.damage_chance * player_variable_chance else 0
 
-        Game.health = Game.health - enemy_damage
-        Game.enemy.health = Game.enemy.health - player_damage - blood_damage
+        Game.health = Game.health - enemy_damage - Game.blood
+        Game.enemy.health = Game.enemy.health - player_damage
+        Game.enemy.apply_blood(action, player_damage)
 
-        if not Game.blood:
-            Game.blood = action.blood
-            Game.blood_ticks = action.blood_ticks
+        if enemy_damage > 0:
+            Game.blood += Game.enemy.weapon.blood
+            Game.blood_ticks += Game.enemy.weapon.blood_ticks
 
         Game.log = f"| Log\n{transcriber.get_index(19, 21)\
                             .replace("player_damage", str(player_damage))\
@@ -482,7 +481,7 @@ class Game: # Create a namespace for our game
         reward = int(rarity_multiplier * blood_spill * Game.enemy.weapon.damage_chance * Game.enemy.weapon.scenery * 100) + rarity_reward
         reward = max(0, reward)
         Game.currency += reward
-        Game.total_currency += reward
+        Game.lifetime_currency += reward
 
         Game.log = "| Log\n" + transcriber.get_index(32)
         if not Game.enemy.weapon in Game.weapons:
