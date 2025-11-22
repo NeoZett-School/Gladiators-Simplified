@@ -24,7 +24,7 @@ WEAPONS = [
     Item("Knife", 10, 0.45, 0.75, 0, 0, "rare"),                # rare
     Item("Bow", 9, 0.6, 0.95, 0, 0, "uncommon"),                # uncommon
     Item("War Hammer", 12, 0.55, 0.4, 0, 0, "rare"),            # rare
-    Item("Short Sword", 6, 0.9, 0.6, 0, 0, "common"),           # common
+    Item("Short Sword", 6, 0.9, 0.6, 3, 1, "common"),           # common
     Item("Spear", 7, 0.8, 0.7, 3, 1, "rare"),                   # common
     Item("Crossbow", 11, 0.5, 0.9, 0, 0, "rare"),               # rare
     Item("Dagger", 4, 0.98, 0.8, 2, 2, "common"),               # common

@@ -442,7 +442,7 @@ class Game: # Create a namespace for our game
         total = sum(WEAPON_RARITY) or 1
         prob = weight / total
         rarity_multiplier = 1.0 - prob  # in [0,1]
-        reward = int(rarity_multiplier * Game.enemy.weapon.damage * Game.enemy.weapon.damage_chance * 100)
+        reward = int(rarity_multiplier * ((Game.enemy.weapon.damage + Game.enemy.weapon.blood * Game.enemy.weapon.blood_ticks) / 2) * Game.enemy.weapon.damage_chance * 100)
         Game.currency += max(0, reward)
 
         Game.log = "| Log\n" + transcriber.get_index(32)
