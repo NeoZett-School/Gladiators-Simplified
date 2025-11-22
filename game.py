@@ -165,6 +165,8 @@ class Game: # Create a namespace for our game
             print()
             print(rng.choice(constants.INFO_TEXT))
             print()
+            print(f"Final progress: \n{len(Game.achievements)}/7 Achievements\n{Game.wins}/10 Wins\n{Game.loses}/5 Loses\n{Game.total_rounds}/{(200 if Game.difficulty == 2 else 50 if Game.difficulty == 0 else 100)} Rounds")
+            print()
             print(f"{Style.DIM}Makaronies are your unit of comparison.{Style.RESET_ALL}")
             print(f"{Game.lifetime_currency} Makaronies earned in total")
             print(f"{Game.total_rounds} Total rounds")
@@ -657,6 +659,16 @@ class Game: # Create a namespace for our game
         print()
         print("Press any key to exit.")
         msvcrt.getch()
+        draw_main_title()
+        print(transcriber.get_index(50), end="\r")
+        time.sleep(2.0)
+        print(transcriber.get_index(50) + transcriber.get_index(51))
+        print()
+        for i in range(5):
+            print(f"Leaving in {5-i} seconds...", end="\r")
+            time.sleep(1.0)
+        print(" "*23, end="\r")
+        print("Leaving...")
         sys.exit(0)
 
 # ------ Settings ------
