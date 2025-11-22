@@ -27,5 +27,10 @@ RARITY_REWARD = {
     "experimental": 500
 }
 
+LOADING_TEXT = [
+    "Did you know that you cant lose the reavers pike?"
+    
+]
+
 RANDOM_SEED = None
 STATE_CHANGE = (1.0, 0.15, 0.05, 0.02)

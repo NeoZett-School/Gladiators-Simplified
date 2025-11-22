@@ -615,9 +615,11 @@ if difficulty == "3":
 draw_main_title()
 
 print(transcriber.get_index(4))
+print()
+print(rng.choice(constants.LOADING_TEXT))
 for i in range(10): # We'll make a small loading scene
     print(f"\r[{Fore.GREEN + Style.BRIGHT}{"-"*i}{Style.RESET_ALL + Fore.YELLOW}{"-"*(10-i)}{Style.RESET_ALL}]", end="")
-    time.sleep(0.12)
+    time.sleep(0.5)
 
 # ---- Start the game ----
 
