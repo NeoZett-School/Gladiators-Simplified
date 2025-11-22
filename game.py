@@ -243,7 +243,7 @@ class Game: # Create a namespace for our game
                 rarity_reward = constants.RARITY_REWARD[weapon.rarity]
                 blood_spill = ((weapon.damage + weapon.blood * weapon.blood_ticks) / 2)
                 reward = int(rarity_multiplier * blood_spill * weapon.damage_chance * weapon.scenery * 100) + rarity_reward
-                cost = reward * 25 # You require 45 times the award to buy the actual item
+                cost = reward * 10 # You require 10 times the award to buy the actual item
                 if rarity > 0.0: 
                     costs[ident] = cost
                     weapons[ident] = weapon
