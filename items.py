@@ -56,7 +56,7 @@ WEAPON_RARITY = [
     0.6,   # Scimitar
     1.0,  # Throwing Axe
     0.3,   # Halberd
-    1.0,  # Whip
+    0.0,  # Whip (Incredibly frustrating)
     0.1,   # Escalibur (legendary)
     0.05,    # Reavers Pike (legendary/strongest)
     0.0,    # Gods Finger is also unobtainable
