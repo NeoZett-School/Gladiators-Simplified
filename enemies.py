@@ -42,7 +42,7 @@ class Enemy:
         self.weapon = get_weapon()
     
     def apply_blood(self, action: Item, relevant_damage: int) -> None:
-        if self.blood:
+        if self.blood > 0:
             self.blood_ticks -= 1
             if self.blood_ticks <= 0:
                 self.blood = 0
@@ -51,8 +51,8 @@ class Enemy:
         self.health -= self.blood
 
         if relevant_damage > 0:
-            self.blood += action.blood
-            self.blood_ticks += action.blood_ticks
+            self.blood = min(self.blood + action.blood, 5)
+            self.blood_ticks = min(self.blood_ticks + action.blood_ticks, 3)
     
     def damage_now(self, variable_chance: float = 1.0) -> int:
         self.state = rng.choices((self.state, EnemyState.CASUAL, EnemyState.PROTECTIVE, EnemyState.AGGRESIVE), STATE_CHANGE)[0]

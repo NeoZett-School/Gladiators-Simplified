@@ -522,7 +522,7 @@ class Game: # Create a namespace for our game
         Game.enemy_damage_cache  = Game.enemy_damage_cache * 0.8 + enemy_damage * 0.2
         Game.scenery *= action.scenery
 
-        if Game.blood:
+        if Game.blood > 0:
             Game.blood_ticks -= 1
             if Game.blood_ticks <= 0:
                 Game.blood = 0
@@ -530,6 +530,7 @@ class Game: # Create a namespace for our game
 
         Game.health = Game.health - enemy_damage - Game.blood
         Game.enemy.health = Game.enemy.health - player_damage
+        
         Game.enemy.apply_blood(action, player_damage) # Does the exact same thing, but for the enemy
 
         if enemy_damage > 0:
