@@ -162,7 +162,7 @@ class Game: # Create a namespace for our game
     def menu() -> None: # Start rendering the menu
         global background_sound
         while True:
-            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+            if Settings.MUSIC.value and not Game.background_music.is_alive():
                 Game.background_music = create_background_music()
             
             draw_title(Fore.CYAN + Style.BRIGHT + transcriber.get_index(1).upper() + Style.RESET_ALL)
@@ -203,7 +203,7 @@ class Game: # Create a namespace for our game
                     Game.trader()
                 case "6":
                     sys.exit()
-                    
+
             background_sound = "./sounds/menu.mp3"
             if Settings.MUSIC.value:
                 Game.background_music.stop()
@@ -254,7 +254,7 @@ class Game: # Create a namespace for our game
             Game.background_music.stop()
             Game.background_music = create_background_music()
         while True:
-            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+            if Settings.MUSIC.value and not Game.background_music.is_alive():
                 Game.background_music = create_background_music()
 
             draw_main_title()
@@ -314,7 +314,7 @@ class Game: # Create a namespace for our game
             Game.background_music.stop()
             Game.background_music = create_background_music()
         while True:
-            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+            if Settings.MUSIC.value and not Game.background_music.is_alive():
                 Game.background_music = create_background_music()
                 
             draw_main_title()
@@ -387,7 +387,7 @@ class Game: # Create a namespace for our game
             Game.background_music = create_background_music()
         while Game.active:
             draw_main_title()
-            if not Game.background_music.is_alive() and Settings.MUSIC.value:
+            if Settings.MUSIC.value and not Game.background_music.is_alive():
                 Game.background_music = create_background_music()
             Game.battle()
     
