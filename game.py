@@ -349,9 +349,9 @@ class Game: # Create a namespace for our game
                 .replace("enemy_name", Game.enemy.name)\
                 .replace("game_round", str(Game.round))\
                 .replace("player_health", str(Game.health))\
-                .replace("enemy_health", str(Game.enemy.health)\
+                .replace("enemy_health", str(Game.enemy.health))\
                 .replace("player_blood", f"{Game.blood}x{Game.blood_ticks}")\
-                .replace("enemy_blood", f"{Game.enemy.blood}x{Game.enemy.blood_ticks}"))
+                .replace("enemy_blood", f"{Game.enemy.blood}x{Game.enemy.blood_ticks}")
         )
         print()
 
