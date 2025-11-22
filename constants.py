@@ -45,7 +45,7 @@ INFO_TEXT = [
     "Buy the reavers pike, and never lose it.",
     "One achievement requires you to use the trident",
     "Get five items and you will get an achievement",
-    "There is a secret game modes, only the developers know of.",
+    "There is a secret game mode, only the developers know of.",
     "The escalibur is very powerful, deals 20 damage, but is very unlikely to hit.",
     "The reavers pike is half as common as the escalibur.",
     "The axe has a 95%% chance to hit.",
@@ -53,7 +53,11 @@ INFO_TEXT = [
     "The costs and earnings after every battle is carefully calculated based on how powerful the item is.",
     "Even if you lose, you are lucky to get 5 loses, which gives you an award!",
     "Win five times to get an award!",
-    "The name of every enemy is generated randomly."
+    "The name of every enemy is generated randomly.",
+    "This game was a school porject.",
+    "Hard is very difficult indeed...",
+    "The creator is from Sweden.",
+    "Buy an item for ten times of what it gives you after winning a battle."
 ]
 
 RANDOM_SEED = None
