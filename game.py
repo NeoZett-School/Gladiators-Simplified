@@ -613,7 +613,7 @@ class Game: # Create a namespace for our game
         draw_main_title()
         print("=== Final Statistics ===")
         print(f"Player: {Game.player_name}")
-        print(f"Difficulty: {Game.difficulty} (0=Easy, 1=Normal, 2=Hard, 09=Experimental)") # This is the first time we reference the forth game mode. Only now will the player now.
+        print(f"Difficulty: {Game.difficulty} (0=Easy, 1=Normal, 2=Hard, 3=Experimental)") # This is the first time we reference the forth game mode. Only now will the player now.
         print(f"Total rounds: {Game.total_rounds}")
         print(f"Wins: {Game.wins}  |  Losses: {Game.loses}")
         print(f"Makaronies (current / lifetime from battle): {Game.currency} / {Game.lifetime_currency}")
@@ -684,12 +684,12 @@ while not Game.player_name:
     Game.player_name = input(transcriber.get_index(3)) # Select a name
 
 difficulty = ""
-while not difficulty in ("0", "1", "2", "09"):
+while not difficulty in ("0", "1", "2", "3"):
     draw_main_title()
     difficulty = input(transcriber.get_index(15))
 Game.difficulty = int(difficulty)
 
-if difficulty == "09":
+if difficulty == "3":
     Game.weapons.clear()
     Game.weapons = WEAPONS.copy()
 
