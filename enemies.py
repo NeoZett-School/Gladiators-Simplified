@@ -34,12 +34,14 @@ class Enemy:
     health: int = field(init=False)
     weapon: Item = field(init=False)
     state: EnemyState = field(init=False)
-    blood: int = 0
-    blood_ticks: int = 0
+    blood: int = field(init=False)
+    blood_ticks: int = field(init=False)
 
     def __post_init__(self) -> None:
         self.name = rng.choice(NAMES)
         self.weapon = get_weapon()
+        self.blood = 0
+        self.blood_ticks = 0
     
     def apply_blood(self, action: Item, relevant_damage: int) -> None:
         if self.blood > 0:
@@ -48,7 +50,7 @@ class Enemy:
                 self.blood = 0
                 self.blood_ticks = 0
 
-        self.health -= self.blood
+        self.health = self.health - self.blood
 
         if relevant_damage > 0:
             self.blood = min(self.blood + action.blood, 5)

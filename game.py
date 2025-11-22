@@ -527,10 +527,11 @@ class Game: # Create a namespace for our game
             if Game.blood_ticks <= 0:
                 Game.blood = 0
                 Game.blood_ticks = 0
+            Game.health = Game.health - Game.blood
 
-        Game.health = Game.health - enemy_damage - Game.blood
+        Game.health = Game.health - enemy_damage
         Game.enemy.health = Game.enemy.health - player_damage
-        
+
         Game.enemy.apply_blood(action, player_damage) # Does the exact same thing, but for the enemy
 
         if enemy_damage > 0:
