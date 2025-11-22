@@ -363,7 +363,7 @@ class Game: # Create a namespace for our game
                 Game.blood = 0
                 Game.blood_ticks = 0
         
-        blood_damage = Game.blood if rng.random(action.damage_chance * player_variable_chance) else 0
+        blood_damage = Game.blood if rng.random() < action.damage_chance * player_variable_chance else 0
 
         Game.health = Game.health - enemy_damage
         Game.enemy.health = Game.enemy.health - player_damage - blood_damage
