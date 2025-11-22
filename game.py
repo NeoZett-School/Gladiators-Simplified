@@ -41,7 +41,7 @@ def prompt_menu(title: str, prompt: str, options: Dict[str, str]):
     return input(prompt)
 
 # We'll create a method to run a new background sound
-background_sound = "./sounds/background.mp3"
+background_sound = "./sounds/menu.mp3"
 def create_background_music() -> Sound:
     return playsound(background_sound, False)
 
@@ -161,8 +161,9 @@ class Game: # Create a namespace for our game
 
     def menu() -> None: # Start rendering the menu
         global background_sound
-        background_sound = "./sounds/background.mp3"
+        background_sound = "./sounds/menu.mp3"
         if Settings.MUSIC.value:
+            Game.background_music.stop()
             Game.background_music = create_background_music()
         while True:
             if not Game.background_music.is_alive() and Settings.MUSIC.value:
@@ -249,6 +250,7 @@ class Game: # Create a namespace for our game
         global background_sound
         background_sound = "./sounds/shop.mp3"
         if Settings.MUSIC.value:
+            Game.background_music.stop()
             Game.background_music = create_background_music()
         while True:
             if not Game.background_music.is_alive() and Settings.MUSIC.value:
@@ -308,6 +310,7 @@ class Game: # Create a namespace for our game
         global background_sound
         background_sound = "./sounds/shop.mp3"
         if Settings.MUSIC.value:
+            Game.background_music.stop()
             Game.background_music = create_background_music()
         while True:
             if not Game.background_music.is_alive() and Settings.MUSIC.value:
@@ -379,6 +382,7 @@ class Game: # Create a namespace for our game
         Game.active = True
         background_sound = "./sounds/fight.mp3"
         if Settings.MUSIC.value:
+            Game.background_music.stop()
             Game.background_music = create_background_music()
         while Game.active:
             draw_main_title()
