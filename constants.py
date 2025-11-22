@@ -38,7 +38,7 @@ RARITY_REWARD = {
     "experimental": 500
 }
 
-LOADING_TEXT = [
+INFO_TEXT = [
     "Did you know that you cant lose the reavers pike?",
     "You can sell bad items to the trader and recieve half the price.",
     "Green is common, blue is uncommon, magenta is rare and red are legendary.",
