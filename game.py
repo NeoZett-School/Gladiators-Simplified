@@ -34,7 +34,7 @@ def draw_title(*text: str) -> None: # We'll create a title method to render all 
     print(*text, end="\n\n")
 
 # We'll manifacture the drop down menu
-def menu(title: str, prompt: str, options: Dict[str, str]):
+def prompt_menu(title: str, prompt: str, options: Dict[str, str]):
     print(title)
     for k, v in options.items():
         print(Fore.BLUE + k + ": " + Fore.RESET + v)
@@ -165,7 +165,7 @@ class Game: # Create a namespace for our game
             print(f"{Game.wins} Wins")
             print(f"{Game.loses} Loses")
             print()
-            directory = menu(
+            directory = prompt_menu(
                 title = transcriber.get_index(5), 
                 prompt = transcriber.get_index(6), 
                 options = {
@@ -173,7 +173,8 @@ class Game: # Create a namespace for our game
                     "2": transcriber.get_index(8),
                     "3": transcriber.get_index(33),
                     "4": transcriber.get_index(37),
-                    "5": transcriber.get_index(9)
+                    "5": transcriber.get_index(38),
+                    "6": transcriber.get_index(9)
                 }
             ).lower().strip()
             match directory: # do something depending on the input
@@ -186,6 +187,8 @@ class Game: # Create a namespace for our game
                 case "4":
                     Game.shop()
                 case "5":
+                    Game.trader()
+                case "6":
                     sys.exit()
     
     def options() -> None: # Start rendering the options
@@ -199,7 +202,7 @@ class Game: # Create a namespace for our game
                 settings[i] = v
                 options[i] = v.name + f" [{Fore.MAGENTA}{v.text_value}{Style.RESET_ALL}]"
 
-            setting_name = menu(
+            setting_name = prompt_menu(
                 title = transcriber.get_index(10),
                 prompt = transcriber.get_index(11),
                 options = options
@@ -234,26 +237,35 @@ class Game: # Create a namespace for our game
             costs = {}
             weapons = {}
             menu_options = {}
+
+            total_weights = sum(WEAPON_RARITY) or 1
             for i, weapon in enumerate(WEAPONS):
-                ident = str(i+1)
-                rarity = WEAPON_RARITY[i]
-                total = sum(WEAPON_RARITY) or 1
-                prob = rarity / total
-                rarity_multiplier = 1.0 - prob  # in [0,1]
-                rarity_reward = constants.RARITY_REWARD[weapon.rarity]
-                blood_spill = ((weapon.damage + weapon.blood * weapon.blood_ticks) / 2)
-                reward = int(rarity_multiplier * blood_spill * weapon.damage_chance * weapon.scenery * 100) + rarity_reward
-                cost = reward * 10 # You require 10 times the award to buy the actual item
-                if rarity > 0.0: 
-                    costs[ident] = cost
-                    weapons[ident] = weapon
-                    menu_options[ident] = f"{constants.RARITY_COLOR[weapon.rarity]}{weapon.name}{Style.RESET_ALL} - {Style.BRIGHT + (Fore.GREEN if Game.currency >= cost else Fore.RED)}{cost} Makaronies{Style.RESET_ALL}"
+                ident = str(i + 1)
+                weight = WEAPON_RARITY[WEAPONS.index(weapon)]
+                prob = weight / total_weights
+                rarity_multiplier = 1.0 - prob  # rarer -> larger multiplier
+                # ensure the weapon object has .rarity, .blood, .blood_ticks attributes
+                rarity_reward = constants.RARITY_REWARD.get(getattr(weapon, "rarity", "common"), 0)
+                blood_spill = ((weapon.damage + getattr(weapon, "blood", 0) * getattr(weapon, "blood_ticks", 0)) / 2)
+                # clamp/scaling for stability
+                base = max(0.0, blood_spill * weapon.damage_chance * weapon.scenery)
+                reward = int(rarity_multiplier * base * 100) + rarity_reward
+                cost = max(1, reward * 10)
+
+                # only display purchasable weapons (or filter designer chooses)
+                if weapon.rarity == "experimental": continue
+                costs[ident] = cost
+                weapons[ident] = weapon
+                affordable = Game.currency >= cost
+                menu_options[ident] = f"{constants.RARITY_COLOR.get(weapon.rarity)}{weapon.name}{Style.RESET_ALL} " \
+                                    f"({weapon.damage} dmg, {weapon.damage_chance:.2f} hit, bleed {getattr(weapon,'blood',0)}x{getattr(weapon,'blood_ticks',0)}) - " \
+                                    f"{Style.BRIGHT}{Fore.GREEN if affordable else Fore.RED}{cost} Makaronies{Style.RESET_ALL}"
                     
-            purchase_name = menu(
+            purchase_name = prompt_menu(
                 title = transcriber.get_index(37),
                 prompt = transcriber.get_index(17),
                 options = menu_options
-            )
+            ).lower().strip()
             
             purchase_weapon = weapons.get(purchase_name)
             purchase_cost = costs.get(purchase_name)
@@ -264,6 +276,65 @@ class Game: # Create a namespace for our game
             if Game.currency >= purchase_cost:
                 Game.weapons.append(purchase_weapon)
                 Game.currency -= purchase_cost
+    
+    def trader() -> None:
+        while True:
+            draw_main_title()
+            print(f"{Game.currency} Makaronies")
+            print()
+
+            if len(Game.weapons) <= 1:
+                print(transcriber.get_index(39))
+                msvcrt.getch()
+                return
+
+            gives = {}
+            weapons = {}
+            menu_options = {}
+
+            total_weights = sum(WEAPON_RARITY) or 1
+            for i, weapon in enumerate(Game.weapons):
+                ident = str(i + 1)
+                weight = WEAPON_RARITY[i]
+                prob = weight / total_weights
+                rarity_multiplier = 1.0 - prob  # rarer -> larger multiplier
+                # ensure the weapon object has .rarity, .blood, .blood_ticks attributes
+                rarity_reward = constants.RARITY_REWARD.get(getattr(weapon, "rarity", "common"), 0)
+                blood_spill = ((weapon.damage + getattr(weapon, "blood", 0) * getattr(weapon, "blood_ticks", 0)) / 2)
+                # clamp/scaling for stability
+                base = max(0.0, blood_spill * weapon.damage_chance * weapon.scenery)
+                reward = int(rarity_multiplier * base * 100) + rarity_reward
+                cost = max(1, reward * 10)
+                give = int(cost / 2)
+
+                # only display purchasable weapons (or filter designer chooses)
+                gives[ident] = give
+                weapons[ident] = weapon
+                menu_options[ident] = f"{constants.RARITY_COLOR.get(weapon.rarity)}{weapon.name}{Style.RESET_ALL} " \
+                                    f"({weapon.damage} dmg, {weapon.damage_chance:.2f} hit, bleed {getattr(weapon,'blood',0)}x{getattr(weapon,'blood_ticks',0)}) - " \
+                                    f"{give} Makaronies"
+                    
+            trade_name = prompt_menu(
+                title = transcriber.get_index(38),
+                prompt = transcriber.get_index(17),
+                options = menu_options
+            ).lower().strip()
+            
+            trade_weapon = weapons.get(trade_name)
+            trade_gives = gives.get(trade_name)
+            
+            if not trade_weapon:
+                return
+            
+            # confirm
+            draw_main_title()
+            print(transcriber.get_index(40).replace("trade_gives", trade_gives).replace("trade_name", trade_weapon.name))
+            resp = input("> ").strip().lower()
+            if resp not in ("y", "yes"):
+                continue  # return to trader menu
+            
+            Game.weapons.remove(trade_weapon)
+            Game.currency += trade_gives
     
     def game() -> None: # We'll handle the actual game logic here
         Game.active = True
@@ -312,7 +383,7 @@ class Game: # Create a namespace for our game
 
         retreat = str(len(options) + 1)
 
-        action_name = menu(
+        action_name = prompt_menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
             options = {k: f"{constants.RARITY_COLOR[v.rarity]}{v.name}{Style.RESET_ALL}" for k, v in options.items()} | ({retreat: "Retreat"} if Game.enemy.health < 8 or Game.difficulty == 0 else {})
@@ -400,11 +471,11 @@ class Game: # Create a namespace for our game
 
         Game.health = Game.health - enemy_damage - Game.blood
         Game.enemy.health = Game.enemy.health - player_damage
-        Game.enemy.apply_blood(action, player_damage)
+        Game.enemy.apply_blood(action, player_damage) # Does the exact same thing, but for the enemy
 
         if enemy_damage > 0:
-            Game.blood += Game.enemy.weapon.blood
-            Game.blood_ticks += Game.enemy.weapon.blood_ticks
+            Game.blood = min(Game.blood + Game.enemy.weapon.blood, 5)
+            Game.blood_ticks = min(Game.blood_ticks + Game.enemy.weapon.blood_ticks, 3)
 
         Game.log = f"| Log\n{transcriber.get_index(19, 21)\
                             .replace("player_damage", str(player_damage))\
