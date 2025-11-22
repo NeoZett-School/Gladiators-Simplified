@@ -537,8 +537,8 @@ class Game: # Create a namespace for our game
                 Game.blood_ticks = 0
 
         if enemy_damage > 0:
-            Game.blood = min(Game.blood + action.blood, 5)
-            Game.blood_ticks = min(Game.blood_ticks + action.blood_ticks, 3)
+            Game.blood = min(Game.blood + Game.enemy.weapon.blood, 5)
+            Game.blood_ticks = min(Game.blood_ticks + Game.enemy.weapon.blood_ticks, 3)
 
         Game.log = f"| Log\n{transcriber.get_index(19, 21)\
                             .replace("player_damage", str(player_damage))\
