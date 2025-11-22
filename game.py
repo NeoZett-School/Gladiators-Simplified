@@ -129,6 +129,9 @@ class Game: # Create a namespace for our game
     loses: int = 0
     wins: int = 0
 
+    blood: int = 0
+    blood_ticks: int = 0
+
     has_first_game_achievement: bool = False
     has_trident_achievement: bool = False
     has_win_achievement: bool = False
@@ -266,10 +269,18 @@ class Game: # Create a namespace for our game
 
         retreat = str(len(options) + 1)
 
+        rarites = {
+            "common": Fore.GREEN,
+            "uncommon": Fore.CYAN,
+            "rare": Fore.MAGENTA,
+            "legendary": Fore.RED,
+            "experimental": Fore.YELLOW
+        }
+
         action_name = menu(
             title = transcriber.get_index(16),
             prompt = transcriber.get_index(17),
-            options = {k: v.name for k, v in options.items()} | ({retreat: "Retreat"} if Game.enemy.health < 8 or Game.difficulty == 0 else {})
+            options = {k: f"{rarites[v.rarity]}{v.name}{Style.RESET_ALL}" for k, v in options.items()} | ({retreat: "Retreat"} if Game.enemy.health < 8 or Game.difficulty == 0 else {})
         ).lower().strip()
 
         draw_main_title()
@@ -346,8 +357,20 @@ class Game: # Create a namespace for our game
         Game.enemy_damage_cache  = Game.enemy_damage_cache * 0.8 + enemy_damage * 0.2
         Game.scenery *= action.scenery
 
+        if Game.blood:
+            Game.blood_ticks -= 1
+            if Game.blood_ticks <= 0:
+                Game.blood = 0
+                Game.blood_ticks = 0
+        
+        blood_damage = Game.blood if rng.random(action.damage_chance * player_variable_chance) else 0
+
         Game.health = Game.health - enemy_damage
-        Game.enemy.health = Game.enemy.health - player_damage
+        Game.enemy.health = Game.enemy.health - player_damage - blood_damage
+
+        if not Game.blood:
+            Game.blood = action.blood
+            Game.blood_ticks = action.blood_ticks
 
         Game.log = f"| Log\n{transcriber.get_index(19, 21)\
                             .replace("player_damage", str(player_damage))\

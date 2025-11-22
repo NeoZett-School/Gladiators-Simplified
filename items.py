@@ -10,30 +10,33 @@ class Item:
     damage: int
     damage_chance: float
     scenery: float
+    blood: int
+    blood_ticks: int
+    rarity: str
 
     def damage_now(self, variable_chance: float = 1.0) -> int:
         return self.damage if rng.random() <= (self.damage_chance * variable_chance) else 0
 
 WEAPONS = [
-    Item("Axe", 5, 0.95, 0.5),             # common
-    Item("Trident", 8, 0.7, 0.75),         # uncommon
-    Item("Long Sword", 7, 0.85, 0.65),     # uncommon
-    Item("Knife", 10, 0.45, 0.75),         # rare
-    Item("Bow", 9, 0.6, 0.95),             # uncommon
-    Item("War Hammer", 12, 0.55, 0.4),     # rare
-    Item("Short Sword", 6, 0.9, 0.6),      # common
-    Item("Spear", 7, 0.8, 0.7),            # common
-    Item("Crossbow", 11, 0.5, 0.9),        # rare
-    Item("Dagger", 4, 0.98, 0.8),          # common
-    Item("Mace", 9, 0.65, 0.45),           # uncommon
-    Item("Scimitar", 8, 0.75, 0.7),        # uncommon
-    Item("Throwing Axe", 6, 0.7, 0.85),    # common
-    Item("Halberd", 10, 0.6, 0.55),        # rare
-    Item("Whip", 3, 0.9, 1.0),             # common
-    Item("Escalibur", 20, 0.1, 0.95),      # legendary
-    Item("Reavers Pike", 28, 0.6, 0.95),   # legendary/overpowered
-    Item("Gods Finger", 100, 1.0, 1.0),
-    Item("Air", 0.0, 0.0, 0.0)
+    Item("Axe", 5, 0.95, 0.5, 0, 0, "common"),                  # common
+    Item("Trident", 8, 0.7, 0.75, 0, 0, "uncommon"),            # uncommon
+    Item("Long Sword", 7, 0.85, 0.65, 0, 0, "uncommon"),        # uncommon
+    Item("Knife", 10, 0.45, 0.75, 0, 0, "rare"),                # rare
+    Item("Bow", 9, 0.6, 0.95, 0, 0, "uncommon"),                # uncommon
+    Item("War Hammer", 12, 0.55, 0.4, 0, 0, "rare"),            # rare
+    Item("Short Sword", 6, 0.9, 0.6, 0, 0, "common"),           # common
+    Item("Spear", 7, 0.8, 0.7, 3, 1, "rare"),                   # common
+    Item("Crossbow", 11, 0.5, 0.9, 0, 0, "rare"),               # rare
+    Item("Dagger", 4, 0.98, 0.8, 2, 2, "common"),               # common
+    Item("Mace", 9, 0.65, 0.45, 3, 1, "uncommon"),              # uncommon
+    Item("Scimitar", 8, 0.75, 0.7, 4, 1, "uncommon"),           # uncommon
+    Item("Throwing Axe", 6, 0.7, 0.85, 0, 0, "common"),         # common
+    Item("Halberd", 10, 0.6, 0.55, 0, 0, "rare"),               # rare
+    Item("Whip", 3, 0.9, 1.0, 0, 0, "common"),                  # common
+    Item("Escalibur", 20, 0.1, 0.95, 0, 0, "legendary"),        # legendary
+    Item("Reavers Pike", 15, 0.6, 0.95, 5, 3, "legendary"),     # legendary/overpowered
+    Item("Gods Finger", 100, 1.0, 1.0, 0, 0, "experimental"),   # experimental/unobtainable/overpowered
+    Item("Air", 0.0, 0.0, 0.0, 0, 0, "experimental")            # experimental/unobtainable/overpowered
 ]
 
 # Rarity weights matching the order above
