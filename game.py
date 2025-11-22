@@ -626,6 +626,8 @@ class Game: # Create a namespace for our game
     def reset() -> None:
         Game.player_damage_cache = 0
         Game.enemy_damage_cache = 0
+        Game.blood = 0
+        Game.blood_ticks = 0
         Game.enemy = None
         Game.health = 25
         Game.round = 1
